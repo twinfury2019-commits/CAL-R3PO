@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chaman Arms License Verification | Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --green-deep:    #003d1f;
+      --green-primary: #005c2e;
+      --green-mid:     #006633;
+      --gold:          #c8a84b;
+      --bg-base:       #060d08;
+      --bg-surface:    #0c1a0f;
+      --bg-elevated:   #122115;
+      --text-primary:  #e8f0ea;
+      --text-muted:    #7a9e82;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg-base); color: var(--text-primary); overflow-x: hidden; line-height: 1.6; }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; }
+
+    /* Grain */
+    body::after { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 9999; opacity: .5; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--green-primary); border-radius: 3px; }
+
+    /* ── NAVBAR ── */
+    #navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 500; padding: 1rem 2.5rem; transition: background .45s cubic-bezier(.16,1,.3,1), box-shadow .45s cubic-bezier(.16,1,.3,1); }
+    #navbar.scrolled { background: rgba(6,13,8,.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 1px 0 rgba(0,92,46,.25), 0 8px 32px rgba(0,0,0,.5); }
+    .nav-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
+    .nav-logo img { width: 42px; height: 42px; object-fit: contain; }
+    .nav-logo-title { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+    .nav-logo-sub { font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(232,240,234,0.78); }
+    .nav-links { display: flex; align-items: center; gap: 2.5rem; }
+    .nav-link { position: relative; color: rgba(232,240,234,.7); text-decoration: none; font-size: .8125rem; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; transition: color .22s ease; }
+    .nav-link::after { content: ''; position: absolute; bottom: -3px; left: 0; right: 100%; height: 1px; background: var(--gold); transition: right .3s cubic-bezier(.16,1,.3,1); }
+    .nav-link:hover, .nav-link.active { color: var(--text-primary); }
+    .nav-link:hover::after, .nav-link.active::after { right: 0; }
+    .nav-cta { text-decoration: none; color: #fff; background: linear-gradient(135deg, var(--green-mid), var(--green-deep)); padding: .5rem 1.375rem; border-radius: 4px; font-size: .8rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; box-shadow: 0 2px 14px rgba(0,102,51,.35); transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease; }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(0,102,51,.5); }
+    .nav-cta:active { transform: translateY(0); }
+    .nav-cta:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+    #hamburger { display: none; background: none; border: none; cursor: pointer; color: var(--text-primary); padding: 4px; }
+
+    /* ── MOBILE MENU ── */
+    #mobile-menu { display: none; position: fixed; inset: 0; z-index: 490; background: rgba(6,13,8,.98); backdrop-filter: blur(20px); flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
+    #mobile-menu.open { display: flex; }
+    .mob-link { font-family: 'Cormorant Garamond', serif; font-size: 2.25rem; font-weight: 700; color: var(--text-primary); text-decoration: none; transition: color .2s ease; }
+    .mob-link:hover { color: var(--gold); }
+    #mob-close { position: absolute; top: 1.5rem; right: 2rem; background: none; border: none; cursor: pointer; color: var(--text-primary); }
+
+    /* ── HERO ── */
+    #hero { position: relative; height: 100vh; min-height: 620px; overflow: hidden; }
+    #hero-bg { position: absolute; inset: 0; background: url('Website_assets/WhatsApp Image 2026-04-16 at 11.50.28 AM.jpeg') center/cover no-repeat; transform: scale(1.12); will-change: transform; }
+    #hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(3,8,4,.25) 0%, rgba(3,8,4,.55) 45%, rgba(3,8,4,.88) 82%, var(--bg-base) 100%); }
+    #hero-color { position: absolute; inset: 0; background: radial-gradient(ellipse at 25% 55%, rgba(0,102,51,.3) 0%, transparent 55%), radial-gradient(ellipse at 72% 22%, rgba(200,168,75,.12) 0%, transparent 48%); mix-blend-mode: overlay; }
+    .hero-content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; max-width: 920px; margin: 0 auto; }
+    .hero-eyebrow { font-size: .7rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin-bottom: .875rem; }
+    .hero-h1 { font-size: clamp(2.4rem,6vw,5rem); font-weight: 700; line-height: 1.08; letter-spacing: -.03em; color: #fff; text-shadow: 0 2px 24px rgba(0,0,0,.55); margin-bottom: 1.25rem; }
+    .hero-h1 em { color: var(--gold); font-style: normal; }
+    .hero-sub { font-size: clamp(.95rem,2vw,1.175rem); color: rgba(232,240,234,.72); line-height: 1.75; max-width: 580px; margin-bottom: 2.5rem; }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .btn-primary { display: inline-block; text-decoration: none; color: #fff; background: linear-gradient(135deg, var(--green-mid), var(--green-deep)); padding: .9rem 2.125rem; border-radius: 6px; font-size: .9375rem; font-weight: 600; letter-spacing: .04em; box-shadow: 0 4px 22px rgba(0,102,51,.42); transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease; }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,102,51,.55); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-secondary { display: inline-block; text-decoration: none; color: #fff; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.22); backdrop-filter: blur(8px); padding: .9rem 2.125rem; border-radius: 6px; font-size: .9375rem; font-weight: 500; transition: background .22s ease, transform .2s cubic-bezier(.34,1.56,.64,1); }
+    .btn-secondary:hover { background: rgba(255,255,255,.15); transform: translateY(-3px); }
+    .hero-scroll { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 2; display: flex; flex-direction: column; align-items: center; gap: .375rem; animation: bob 2.2s ease-in-out infinite; }
+    .hero-scroll span { font-size: .65rem; letter-spacing: .18em; text-transform: uppercase; color: rgba(232,240,234,.35); }
+    @keyframes bob { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(7px);} }
+
+    /* ── REVEAL ── */
+    .rv { opacity: 0; transform: translateY(38px); transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1); }
+    .rv.d1 { transition-delay: .1s; } .rv.d2 { transition-delay: .2s; } .rv.d3 { transition-delay: .3s; }
+    .rv.on { opacity: 1; transform: translateY(0); }
+
+    /* ── LABELS ── */
+    .s-label { font-size: .68rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: .625rem; }
+    .gold-rule { display: inline-block; width: 56px; height: 1.5px; background: linear-gradient(90deg, var(--gold), transparent); }
+
+    /* ── STATS ── */
+    #stats { background: var(--bg-surface); border-top: 1px solid rgba(0,92,46,.2); border-bottom: 1px solid rgba(0,92,46,.2); padding: 2.25rem 2.5rem; }
+    .stats-grid { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,1fr); gap: 1.25rem; }
+    .stat-box { background: var(--bg-elevated); border: 1px solid rgba(0,92,46,.18); border-radius: 6px; padding: 1.375rem 1.5rem; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.03); transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s ease; }
+    .stat-box:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,.3), 0 0 0 1px rgba(0,92,46,.3), inset 0 1px 0 rgba(255,255,255,.05); }
+    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.4rem; font-weight: 700; color: var(--gold); line-height: 1; }
+    .stat-lbl { font-size: .78rem; color: var(--text-muted); letter-spacing: .05em; margin-top: .3rem; }
+
+    /* ── CITY ── */
+    #city { padding: 6rem 2.5rem; max-width: 1280px; margin: 0 auto; }
+    .section-heading { text-align: center; margin-bottom: 3rem; }
+    .section-heading h2 { font-size: clamp(1.9rem,4vw,3rem); font-weight: 700; letter-spacing: -.03em; color: var(--text-primary); margin: .5rem 0; }
+    .section-heading p { font-size: .9375rem; color: var(--text-muted); line-height: 1.75; max-width: 580px; margin: .75rem auto 0; }
+    .head-rule { display: flex; align-items: center; justify-content: center; gap: 1rem; }
+    .city-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 320px 270px; gap: 10px; }
+    .c-card { position: relative; overflow: hidden; border-radius: 5px; }
+    .c-card img { width: 100%; height: 100%; object-fit: cover; transition: transform .7s cubic-bezier(.16,1,.3,1); }
+    .c-card:hover img { transform: scale(1.08); }
+    .c-card .c-grad { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.78) 0%, transparent 55%); }
+    .c-card .c-tint { position: absolute; inset: 0; background: rgba(0,92,46,.18); mix-blend-mode: multiply; transition: opacity .4s ease; }
+    .c-card:hover .c-tint { opacity: 0; }
+    .c-label { position: absolute; bottom: 1rem; left: 1rem; z-index: 2; }
+    .c-label .sub { font-size: .62rem; letter-spacing: .17em; text-transform: uppercase; color: var(--gold); margin-bottom: .2rem; }
+    .c-label .name { font-family: 'Cormorant Garamond', serif; font-size: 1.375rem; font-weight: 700; color: #fff; line-height: 1.2; }
+
+    /* ── MAP ── */
+    #map-section { padding: 0 2.5rem 6rem; max-width: 1280px; margin: 0 auto; }
+    .map-header { text-align: center; margin-bottom: 2rem; }
+    #chaman-map { height: 460px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(0,92,46,.3); box-shadow: 0 4px 40px rgba(0,0,0,.45), 0 0 0 1px rgba(0,92,46,.12); }
+    .leaflet-tile-pane { filter: brightness(.55) hue-rotate(100deg) saturate(.7); }
+
+    /* ── FOOTER ── */
+    footer { background: var(--bg-surface); border-top: 1px solid rgba(0,92,46,.2); padding: 3.5rem 2.5rem 2rem; }
+    .footer-inner { max-width: 1280px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; padding-bottom: 2.5rem; margin-bottom: 1.75rem; border-bottom: 1px solid rgba(0,92,46,.15); }
+    .footer-brand { display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem; }
+    .footer-brand img { width: 34px; height: 34px; object-fit: contain; }
+    .footer-brand-name { font-family: 'Cormorant Garamond', serif; font-size: 1.0625rem; font-weight: 700; color: var(--text-primary); }
+    .footer-tagline { font-size: .85rem; color: var(--text-muted); line-height: 1.72; max-width: 280px; }
+    .footer-col-title { font-size: .68rem; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+    .footer-links { display: flex; flex-direction: column; gap: .5rem; }
+    .footer-link { font-size: .875rem; color: var(--text-muted); text-decoration: none; transition: color .2s ease; }
+    .footer-link:hover { color: var(--text-primary); }
+    .footer-contact { font-size: .875rem; color: var(--text-muted); line-height: 1.85; }
+    .footer-contact a { color: var(--gold); text-decoration: none; font-weight: 600; }
+    .footer-contact a:hover { text-decoration: underline; }
+    .footer-bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; }
+    .footer-copy { font-size: .78rem; color: var(--text-muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid > div:first-child { grid-column: 1/-1; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      #hamburger { display: block; }
+      .city-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 220px 200px 200px; }
+      .city-grid > .c-card:first-child { grid-column: 1/-1; }
+      .city-grid > .c-card:nth-child(4) { grid-column: 1/-1; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    }
+    @media (max-width: 480px) {
+      .city-grid { grid-template-columns: 1fr; grid-template-rows: unset; }
+      .city-grid > .c-card { height: 220px; grid-column: 1 !important; }
+      #navbar { padding: 1rem 1.25rem; }
+      .hero-h1 { font-size: 2.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="Website_assets/Logo.png" alt="Government of Balochistan">
+      <div>
+        <div class="nav-logo-title">Chaman Arms Verification</div>
+        <div class="nav-logo-sub">DC Office Chaman · Balochistan</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html"  class="nav-link" data-page="index.html">Home</a>
+      <a href="index.html#city" class="nav-link">Chaman City</a>
+      <a href="verify.html" class="nav-link" data-page="verify.html">Verify License</a>
+      <a href="about.html"  class="nav-link" data-page="about.html">About Us</a>
+      <a href="verify.html" class="nav-cta">Verify Now</a>
+    </div>
+    <button id="hamburger" aria-label="Open menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu">
+  <button id="mob-close" aria-label="Close menu">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+  <a href="index.html"      class="mob-link" onclick="closeMob()">Home</a>
+  <a href="index.html#city" class="mob-link" onclick="closeMob()">Chaman City</a>
+  <a href="verify.html"     class="mob-link" onclick="closeMob()">Verify License</a>
+  <a href="about.html"      class="mob-link" onclick="closeMob()">About Us</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div id="hero-bg"></div>
+  <div id="hero-overlay"></div>
+  <div id="hero-color"></div>
+  <div class="hero-content">
+    <div class="rv" id="h-e"><span class="hero-eyebrow">Government of Balochistan &nbsp;·&nbsp; DC Office Chaman</span></div>
+    <h1 class="hero-h1 rv d1" id="h-t">Chaman Online<br><em>Arms License</em><br>Verification</h1>
+    <p class="hero-sub rv d2" id="h-s">A secure digital platform by the Deputy Commissioner Office, Chaman. Enter your CNIC to instantly access your registered firearms license details.</p>
+    <div class="hero-actions rv d3" id="h-a">
+      <a href="verify.html" class="btn-primary">Verify My License &rarr;</a>
+      <a href="#city"       class="btn-secondary">Explore Chaman</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(232,240,234,.35)" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="stats-grid">
+    <div class="stat-box rv"><div class="stat-num" id="s1">0</div><div class="stat-lbl">Registered Licenses</div></div>
+    <div class="stat-box rv d1"><div class="stat-num" id="s2">0</div><div class="stat-lbl">Verifications Today</div></div>
+    <div class="stat-box rv d2"><div class="stat-num" id="s3">0</div><div class="stat-lbl">Weapon Types Listed</div></div>
+    <div class="stat-box rv d3"><div class="stat-num" id="s4">24/7</div><div class="stat-lbl">System Availability</div></div>
+  </div>
+</section>
+
+<!-- CHAMAN CITY -->
+<section id="city">
+  <div class="section-heading rv">
+    <span class="s-label">Gateway to Afghanistan</span>
+    <div class="head-rule">
+      <div class="gold-rule"></div>
+      <h2>The City of Chaman</h2>
+      <div class="gold-rule" style="transform:scaleX(-1)"></div>
+    </div>
+    <p>A frontier city in Balochistan rich in history and strategic importance — a vital crossing point between Pakistan and Afghanistan.</p>
+  </div>
+  <div class="city-grid">
+    <div class="c-card rv" style="grid-column:1/3;grid-row:1/2;">
+      <img src="Website_assets/WhatsApp Image 2026-04-16 at 11.50.28 AM.jpeg" alt="Chaman Border Gate">
+      <div class="c-grad"></div><div class="c-tint"></div>
+      <div class="c-label"><div class="sub">Pakistan–Afghanistan Border</div><div class="name">Chaman Border Gate</div></div>
+    </div>
+    <div class="c-card rv d1" style="grid-column:3/4;grid-row:1/2;">
+      <img src="Website_assets/WhatsApp Image 2026-04-16 at 12.23.19 PM.jpeg" alt="DC Office Chaman">
+      <div class="c-grad"></div><div class="c-tint"></div>
+      <div class="c-label"><div class="sub">Government</div><div class="name">DC Office Chaman</div></div>
+    </div>
+    <div class="c-card rv d2" style="grid-column:1/2;grid-row:2/3;">
+      <img src="Website_assets/Kojhak Tunnel.jpg" alt="Kojhak Tunnel Historical">
+      <div class="c-grad"></div><div class="c-tint"></div>
+      <div class="c-label"><div class="sub">Heritage · 1892</div><div class="name">Kojhak Tunnel</div></div>
+    </div>
+    <div class="c-card rv d3" style="grid-column:2/4;grid-row:2/3;">
+      <img src="Website_assets/WhatsApp Image 2026-04-16 at 11.50.30 AM.jpeg" alt="Kojhak Rail Tunnel">
+      <div class="c-grad"></div><div class="c-tint"></div>
+      <div class="c-label"><div class="sub">Infrastructure</div><div class="name">Kojhak Rail Tunnel</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MAP -->
+<section id="map-section">
+  <div class="map-header rv">
+    <span class="s-label">Location</span>
+    <h2 style="font-size:clamp(1.7rem,3vw,2.5rem);font-weight:700;letter-spacing:-.03em;color:var(--text-primary);margin:.4rem 0 0;">Chaman City, Balochistan</h2>
+  </div>
+  <div class="rv d1" id="chaman-map"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="Website_assets/Logo.png" alt="Balochistan Govt">
+          <div class="footer-brand-name">Chaman Arms License Verification</div>
+        </div>
+        <p class="footer-tagline">An official digital service of the Deputy Commissioner Office, Chaman, Government of Balochistan.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Navigation</div>
+        <div class="footer-links">
+          <a href="index.html"      class="footer-link">Home</a>
+          <a href="index.html#city" class="footer-link">Chaman City</a>
+          <a href="verify.html"     class="footer-link">Verify License</a>
+          <a href="about.html"      class="footer-link">About Us</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Contact</div>
+        <div class="footer-contact">
+          DC Office Chaman<br>
+          Chaman, Balochistan, Pakistan<br><br>
+          Arms License Incharge:<br>
+          <a href="tel:03343812778">0334-3812778</a><br>
+          <a href="tel:0826612021">0826-612021</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 DC Office Chaman · Government of Balochistan. All rights reserved.</span>
+      <span class="footer-copy">For authorized use only.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Navbar scroll
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 50), { passive: true });
+
+// Parallax hero
+const heroBg = document.getElementById('hero-bg');
+window.addEventListener('scroll', () => {
+  if (window.scrollY < window.innerHeight)
+    heroBg.style.transform = `scale(1.12) translateY(${window.scrollY * 0.28}px)`;
+}, { passive: true });
+
+// Reveal
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.rv').forEach(el => revealObs.observe(el));
+setTimeout(() => ['h-e','h-t','h-s','h-a'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('on'); }), 80);
+
+// Counters
+function countUp(el, target, suffix) {
+  let cur = 0; const step = target / 55;
+  const t = setInterval(() => { cur = Math.min(cur + step, target); el.textContent = Math.floor(cur) + suffix; if (cur >= target) clearInterval(t); }, 18);
+}
+const statsObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { countUp(document.getElementById('s1'),1247,'+'); countUp(document.getElementById('s2'),38,''); countUp(document.getElementById('s3'),12,''); statsObs.disconnect(); } });
+}, { threshold: 0.6 });
+const statsEl = document.getElementById('stats');
+if (statsEl) statsObs.observe(statsEl);
+
+// Mobile menu
+document.getElementById('hamburger').addEventListener('click', () => { document.getElementById('mobile-menu').classList.add('open'); document.body.style.overflow = 'hidden'; });
+document.getElementById('mob-close').addEventListener('click', closeMob);
+function closeMob() { document.getElementById('mobile-menu').classList.remove('open'); document.body.style.overflow = ''; }
+
+// Active nav link
+const currentPage = location.pathname.split('/').pop() || 'index.html';
+document.querySelectorAll('.nav-link[data-page]').forEach(l => { if (l.dataset.page === currentPage) l.classList.add('active'); });
+
+// Leaflet Map
+window.addEventListener('load', () => {
+  const map = L.map('chaman-map', { center: [30.9200, 66.4500], zoom: 13, scrollWheelZoom: false });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', maxZoom: 19 }).addTo(map);
+  const dcIcon = L.divIcon({ html: `<div style="width:28px;height:28px;background:linear-gradient(135deg,#006633,#003d1f);border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2.5px solid #c8a84b;box-shadow:0 3px 10px rgba(0,102,51,.55);"></div>`, iconSize:[28,28], iconAnchor:[14,28], className:'' });
+  L.marker([30.9200, 66.4500], { icon: dcIcon }).addTo(map).bindPopup(`<b style="color:#006633;">DC Office Chaman</b><br><small>Arms License Department<br>📞 0334-3812778 / 0826-612021</small>`).openPopup();
+  L.marker([30.9278, 66.4472]).addTo(map).bindPopup('<b>Chaman Border Crossing</b><br><small>Pakistan–Afghanistan Border Gate</small>');
+});
+</script>
+</body>
+</html>

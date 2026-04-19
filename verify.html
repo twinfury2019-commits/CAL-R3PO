@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Arms License | DC Office Chaman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-deep:    #003d1f;
+      --green-primary: #005c2e;
+      --green-mid:     #006633;
+      --gold:          #c8a84b;
+      --bg-base:       #060d08;
+      --bg-surface:    #0c1a0f;
+      --bg-elevated:   #122115;
+      --text-primary:  #e8f0ea;
+      --text-muted:    #7a9e82;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg-base); color: var(--text-primary); overflow-x: hidden; line-height: 1.6; }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; }
+
+    /* Grain */
+    body::after { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 9999; opacity: .5; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--green-primary); border-radius: 3px; }
+
+    /* ── NAVBAR ── */
+    #navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 500; padding: 1rem 2.5rem; background: rgba(6,13,8,.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 1px 0 rgba(0,92,46,.25), 0 8px 32px rgba(0,0,0,.5); }
+    .nav-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
+    .nav-logo img { width: 42px; height: 42px; object-fit: contain; }
+    .nav-logo-title { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+    .nav-logo-sub { font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(232,240,234,0.78); }
+    .nav-links { display: flex; align-items: center; gap: 2.5rem; }
+    .nav-link { position: relative; color: rgba(232,240,234,.7); text-decoration: none; font-size: .8125rem; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; transition: color .22s ease; }
+    .nav-link::after { content: ''; position: absolute; bottom: -3px; left: 0; right: 100%; height: 1px; background: var(--gold); transition: right .3s cubic-bezier(.16,1,.3,1); }
+    .nav-link:hover, .nav-link.active { color: var(--text-primary); }
+    .nav-link:hover::after, .nav-link.active::after { right: 0; }
+    .nav-cta { text-decoration: none; color: #fff; background: linear-gradient(135deg, var(--green-mid), var(--green-deep)); padding: .5rem 1.375rem; border-radius: 4px; font-size: .8rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; box-shadow: 0 2px 14px rgba(0,102,51,.35); transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease; }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(0,102,51,.5); }
+    .nav-cta:active { transform: translateY(0); }
+    #hamburger { display: none; background: none; border: none; cursor: pointer; color: var(--text-primary); padding: 4px; }
+
+    /* ── MOBILE MENU ── */
+    #mobile-menu { display: none; position: fixed; inset: 0; z-index: 490; background: rgba(6,13,8,.98); backdrop-filter: blur(20px); flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
+    #mobile-menu.open { display: flex; }
+    .mob-link { font-family: 'Cormorant Garamond', serif; font-size: 2.25rem; font-weight: 700; color: var(--text-primary); text-decoration: none; transition: color .2s ease; }
+    .mob-link:hover { color: var(--gold); }
+    #mob-close { position: absolute; top: 1.5rem; right: 2rem; background: none; border: none; cursor: pointer; color: var(--text-primary); }
+
+    /* ── PAGE HERO ── */
+    .page-hero {
+      position: relative; padding-top: 100px; padding-bottom: 4rem;
+      min-height: 360px; display: flex; align-items: center; justify-content: center;
+      text-align: center; overflow: hidden;
+    }
+    .page-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 80%, rgba(0,102,51,.18) 0%, transparent 60%),
+                  radial-gradient(ellipse at 50% 20%, rgba(200,168,75,.06) 0%, transparent 50%);
+    }
+    .page-hero::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,92,46,.4), transparent);
+    }
+    .ph-content { position: relative; z-index: 1; padding: 0 2rem; }
+    .ph-breadcrumb { display: flex; align-items: center; justify-content: center; gap: .5rem; margin-bottom: 1rem; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+    .ph-breadcrumb a { color: var(--text-muted); text-decoration: none; transition: color .2s ease; }
+    .ph-breadcrumb a:hover { color: var(--gold); }
+    .ph-breadcrumb .sep { color: rgba(200,168,75,.4); }
+    .ph-breadcrumb .cur { color: var(--gold); }
+    .ph-eyebrow { font-size: .68rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: .75rem; }
+    .ph-title { font-size: clamp(2.25rem,5vw,4rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; color: #fff; margin-bottom: .875rem; }
+    .ph-title em { color: var(--gold); font-style: normal; }
+    .ph-sub { font-size: 1rem; color: rgba(232,240,234,.6); line-height: 1.75; max-width: 520px; margin: 0 auto; }
+
+    /* ── REVEAL ── */
+    .rv { opacity: 0; transform: translateY(30px); transition: opacity .75s cubic-bezier(.16,1,.3,1), transform .75s cubic-bezier(.16,1,.3,1); }
+    .rv.d1 { transition-delay: .1s; } .rv.d2 { transition-delay: .2s; }
+    .rv.on { opacity: 1; transform: translateY(0); }
+    .s-label { font-size: .68rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: .625rem; }
+
+    /* ── VERIFY SECTION ── */
+    #verify {
+      padding: 4rem 2.5rem 6rem;
+      position: relative; overflow: hidden;
+    }
+    #verify::before {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(0,102,51,.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .verify-wrap { max-width: 700px; margin: 0 auto; position: relative; z-index: 1; }
+
+    /* Info strip */
+    .info-strip {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .info-box {
+      background: var(--bg-surface); border: 1px solid rgba(0,92,46,.2); border-radius: 6px;
+      padding: 1.125rem 1.25rem; display: flex; align-items: flex-start; gap: .75rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .info-icon { width: 36px; height: 36px; flex-shrink: 0; border-radius: 7px; display: flex; align-items: center; justify-content: center; background: rgba(0,102,51,.15); border: 1px solid rgba(0,102,51,.3); }
+    .info-title { font-size: .8125rem; font-weight: 600; color: var(--text-primary); margin-bottom: .2rem; }
+    .info-desc  { font-size: .775rem; color: var(--text-muted); line-height: 1.55; }
+
+    /* Card */
+    .verify-card {
+      background: var(--bg-surface);
+      border: 1px solid rgba(0,92,46,.3); border-radius: 10px;
+      padding: 2.5rem 2.75rem;
+      box-shadow: 0 0 0 1px rgba(0,92,46,.08), 0 4px 28px rgba(0,0,0,.45), 0 20px 60px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .field-label { display: block; font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: .55rem; }
+    .cnic-input { width: 100%; background: var(--bg-elevated); border: 1px solid rgba(0,92,46,.4); border-radius: 6px; padding: .9rem 1.2rem; font-family: 'DM Sans', sans-serif; font-size: 1.0625rem; font-weight: 500; color: var(--text-primary); letter-spacing: .08em; outline: none; transition: border-color .25s ease, box-shadow .25s ease; }
+    .cnic-input::placeholder { color: var(--text-muted); font-weight: 400; letter-spacing: .04em; }
+    .cnic-input:focus { border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(0,102,51,.18), 0 0 18px rgba(0,102,51,.1); }
+    .cnic-input.err { border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,.15); }
+    .verify-btn { width: 100%; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: .75rem; background: linear-gradient(135deg, var(--green-mid) 0%, var(--green-deep) 100%); color: #fff; border: none; border-radius: 6px; padding: 1rem 2rem; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: .875rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; box-shadow: 0 4px 18px rgba(0,102,51,.35), 0 1px 4px rgba(0,0,0,.25); transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease, opacity .2s ease; }
+    .verify-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(0,102,51,.5), 0 2px 8px rgba(0,0,0,.3); }
+    .verify-btn:active:not(:disabled) { transform: translateY(0); }
+    .verify-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+    .verify-btn:disabled { opacity: .65; cursor: not-allowed; }
+    .spinner { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; animation: spin .75s linear infinite; display: none; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Result */
+    .result-card { background: var(--bg-elevated); border: 1px solid rgba(0,92,46,.25); border-radius: 7px; padding: 1.5rem 1.75rem; margin-top: 1.5rem; opacity: 0; transform: translateY(14px); transition: opacity .5s cubic-bezier(.16,1,.3,1), transform .5s cubic-bezier(.16,1,.3,1); }
+    .result-card.show { opacity: 1; transform: translateY(0); }
+    .result-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1rem; margin-bottom: .5rem; border-bottom: 1px solid rgba(0,92,46,.2); }
+    .result-head-title { font-family: 'Cormorant Garamond', serif; font-size: 1.1875rem; font-weight: 700; color: var(--text-primary); }
+    .result-head-sub { font-size: .72rem; color: var(--text-muted); margin-top: 1px; }
+    .verified-pill { display: inline-flex; align-items: center; gap: .35rem; background: rgba(0,102,51,.15); border: 1px solid rgba(0,102,51,.4); border-radius: 100px; padding: .22rem .75rem; font-size: .72rem; font-weight: 700; color: #4ade80; letter-spacing: .05em; }
+    .r-row { display: flex; justify-content: space-between; align-items: center; padding: .6rem 0; border-bottom: 1px solid rgba(0,92,46,.12); }
+    .r-row:last-child { border-bottom: none; }
+    .r-key { font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+    .r-val { font-size: .9375rem; font-weight: 500; color: var(--text-primary); text-align: right; max-width: 60%; }
+    .r-val.mono { font-family: monospace; letter-spacing: .04em; }
+    .err-box { display: none; margin-top: 1rem; background: rgba(220,38,38,.08); border: 1px solid rgba(220,38,38,.28); border-radius: 6px; padding: .875rem 1rem; font-size: .875rem; color: #fca5a5; line-height: 1.6; }
+    .verify-notice { font-size: .725rem; color: var(--text-muted); text-align: center; margin-top: 1.125rem; line-height: 1.65; }
+    .verify-notice a { color: var(--gold); text-decoration: none; }
+    .verify-notice a:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--bg-surface); border-top: 1px solid rgba(0,92,46,.2); padding: 3.5rem 2.5rem 2rem; }
+    .footer-inner { max-width: 1280px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; padding-bottom: 2.5rem; margin-bottom: 1.75rem; border-bottom: 1px solid rgba(0,92,46,.15); }
+    .footer-brand { display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem; }
+    .footer-brand img { width: 34px; height: 34px; object-fit: contain; }
+    .footer-brand-name { font-family: 'Cormorant Garamond', serif; font-size: 1.0625rem; font-weight: 700; color: var(--text-primary); }
+    .footer-tagline { font-size: .85rem; color: var(--text-muted); line-height: 1.72; max-width: 280px; }
+    .footer-col-title { font-size: .68rem; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+    .footer-links { display: flex; flex-direction: column; gap: .5rem; }
+    .footer-link { font-size: .875rem; color: var(--text-muted); text-decoration: none; transition: color .2s ease; }
+    .footer-link:hover { color: var(--text-primary); }
+    .footer-contact { font-size: .875rem; color: var(--text-muted); line-height: 1.85; }
+    .footer-contact a { color: var(--gold); text-decoration: none; font-weight: 600; }
+    .footer-contact a:hover { text-decoration: underline; }
+    .footer-bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; }
+    .footer-copy { font-size: .78rem; color: var(--text-muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid > div:first-child { grid-column: 1/-1; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      #hamburger { display: block; }
+      .info-strip { grid-template-columns: 1fr; }
+      .verify-card { padding: 1.75rem 1.5rem; }
+      .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    }
+    @media (max-width: 480px) {
+      #navbar { padding: 1rem 1.25rem; }
+      .ph-title { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="Website_assets/Logo.png" alt="Government of Balochistan">
+      <div>
+        <div class="nav-logo-title">Chaman Arms Verification</div>
+        <div class="nav-logo-sub">DC Office Chaman · Balochistan</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html"  class="nav-link" data-page="index.html">Home</a>
+      <a href="index.html#city" class="nav-link">Chaman City</a>
+      <a href="verify.html" class="nav-link" data-page="verify.html">Verify License</a>
+      <a href="about.html"  class="nav-link" data-page="about.html">About Us</a>
+      <a href="verify.html" class="nav-cta">Verify Now</a>
+    </div>
+    <button id="hamburger" aria-label="Open menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu">
+  <button id="mob-close" aria-label="Close menu">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+  <a href="index.html"      class="mob-link" onclick="closeMob()">Home</a>
+  <a href="index.html#city" class="mob-link" onclick="closeMob()">Chaman City</a>
+  <a href="verify.html"     class="mob-link" onclick="closeMob()">Verify License</a>
+  <a href="about.html"      class="mob-link" onclick="closeMob()">About Us</a>
+</div>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="ph-content">
+    <div class="ph-breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">/</span>
+      <span class="cur">Verify License</span>
+    </div>
+    <span class="ph-eyebrow">Digital Government Service</span>
+    <h1 class="ph-title">Arms License<br><em>Verification</em></h1>
+    <p class="ph-sub">Enter your 13-digit CNIC number without dashes to instantly retrieve your registered arms license details from the DC Office Chaman database.</p>
+  </div>
+</div>
+
+<!-- VERIFY SECTION -->
+<section id="verify">
+  <div class="verify-wrap">
+
+    <!-- Info strip -->
+    <div class="info-strip rv">
+      <div class="info-box">
+        <div class="info-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div><div class="info-title">Secure</div><div class="info-desc">Your CNIC is never stored. Queries are read-only.</div></div>
+      </div>
+      <div class="info-box">
+        <div class="info-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8a84b" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div><div class="info-title">Instant</div><div class="info-desc">Results returned in seconds from the live database.</div></div>
+      </div>
+      <div class="info-box">
+        <div class="info-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.29 6.29l.75-.76a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <div><div class="info-title">Support</div><div class="info-desc">Call 0334-3812778 or 0826-612021 for help.</div></div>
+      </div>
+    </div>
+
+    <!-- Verification card -->
+    <div class="verify-card rv d1">
+      <div style="margin-bottom:1.125rem;">
+        <label class="field-label" for="cnic-input">National Identity Card Number (CNIC)</label>
+        <input type="text" id="cnic-input" class="cnic-input" placeholder="e.g. 5440112345678" maxlength="13" inputmode="numeric" autocomplete="off">
+      </div>
+
+      <button class="verify-btn" id="verify-btn" onclick="doVerify()">
+        <div class="spinner" id="spinner"></div>
+        <span id="btn-label">
+          <svg style="display:inline;vertical-align:-3px;margin-right:.4rem;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Verify License
+        </span>
+      </button>
+
+      <div class="err-box" id="err-box">
+        <strong>No Record Found —</strong> No arms license is registered for this CNIC.
+        Please verify the number or contact the DC Office Chaman at
+        <a href="tel:03343812778" style="color:var(--gold);">0334-3812778</a> /
+        <a href="tel:0826612021"  style="color:var(--gold);">0826-612021</a>.
+      </div>
+
+      <div class="result-card" id="result-card">
+        <div class="result-head">
+          <div>
+            <div class="result-head-title">License Details</div>
+            <div class="result-head-sub">Officially Registered Record — DC Office Chaman</div>
+          </div>
+          <div class="verified-pill">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            Verified
+          </div>
+        </div>
+        <div class="r-row"><span class="r-key">Name</span>                 <span class="r-val" id="r-name">—</span></div>
+        <div class="r-row"><span class="r-key">Father Name</span>          <span class="r-val" id="r-father">—</span></div>
+        <div class="r-row"><span class="r-key">CNIC</span>                 <span class="r-val mono" id="r-cnic">—</span></div>
+        <div class="r-row"><span class="r-key">Address</span>              <span class="r-val" id="r-addr">—</span></div>
+        <div class="r-row"><span class="r-key">Weapon No &amp; Type</span> <span class="r-val" id="r-weapon">—</span></div>
+        <div class="r-row"><span class="r-key">License No &amp; Date</span><span class="r-val mono" id="r-lnodate">—</span></div>
+        <div class="r-row"><span class="r-key">Validity</span>             <span class="r-val" id="r-validity">—</span></div>
+      </div>
+
+      <p class="verify-notice">
+        Official government service. Data maintained by DC Office Chaman.<br>
+        Queries: <a href="tel:03343812778">0334-3812778</a> &nbsp;|&nbsp;
+        <a href="tel:0826612021">0826-612021</a> &nbsp;|&nbsp;
+        Unauthorized use is prohibited.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="Website_assets/Logo.png" alt="Balochistan Govt">
+          <div class="footer-brand-name">Chaman Arms License Verification</div>
+        </div>
+        <p class="footer-tagline">An official digital service of the Deputy Commissioner Office, Chaman, Government of Balochistan.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Navigation</div>
+        <div class="footer-links">
+          <a href="index.html"      class="footer-link">Home</a>
+          <a href="index.html#city" class="footer-link">Chaman City</a>
+          <a href="verify.html"     class="footer-link">Verify License</a>
+          <a href="about.html"      class="footer-link">About Us</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Contact</div>
+        <div class="footer-contact">
+          DC Office Chaman<br>
+          Chaman, Balochistan, Pakistan<br><br>
+          Arms License Incharge:<br>
+          <a href="tel:03343812778">0334-3812778</a><br>
+          <a href="tel:0826612021">0826-612021</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 DC Office Chaman · Government of Balochistan. All rights reserved.</span>
+      <span class="footer-copy">For authorized use only.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Reveal
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.rv').forEach(el => revealObs.observe(el));
+setTimeout(() => document.querySelectorAll('.rv').forEach(el => { const r = el.getBoundingClientRect(); if (r.top < window.innerHeight) el.classList.add('on'); }), 100);
+
+// Mobile menu
+document.getElementById('hamburger').addEventListener('click', () => { document.getElementById('mobile-menu').classList.add('open'); document.body.style.overflow = 'hidden'; });
+document.getElementById('mob-close').addEventListener('click', closeMob);
+function closeMob() { document.getElementById('mobile-menu').classList.remove('open'); document.body.style.overflow = ''; }
+
+// Active nav link
+const currentPage = location.pathname.split('/').pop() || 'index.html';
+document.querySelectorAll('.nav-link[data-page]').forEach(l => { if (l.dataset.page === currentPage) l.classList.add('active'); });
+
+// CNIC input
+document.getElementById('cnic-input').addEventListener('input', function() { this.value = this.value.replace(/\D/g,'').slice(0,13); });
+document.getElementById('cnic-input').addEventListener('keydown', e => { if (e.key === 'Enter') doVerify(); });
+
+// Demo data — replace with real API after backend launch
+const DEMO = {
+  '5440112345678': {
+    name:     'Muhammad Yousaf Khan',
+    father:   'Haji Abdul Karim Khan',
+    cnic:     '54401-1234567-8',
+    addr:     'House #12, Satellite Town, Chaman',
+    weapon:   'PK-2024-07834 · Pistol 9mm (Beretta M9)',
+    lnodate:  'CHA/AL/2021/00341 · 15 March 2021',
+    validity: 'Valid until 15 March 2026'
+  },
+  '5440198765432': {
+    name:     'Abdul Qadir Baloch',
+    father:   'Haji Noor Muhammad Baloch',
+    cnic:     '54401-9876543-2',
+    addr:     'Ward 5, Near Customs Office, Chaman',
+    weapon:   'SG-2023-04512 · Shotgun 12-Bore (Double Barrel)',
+    lnodate:  'CHA/AL/2020/00187 · 04 July 2020',
+    validity: 'Expired — Renewal Required'
+  }
+};
+
+function doVerify() {
+  const cnic = document.getElementById('cnic-input').value.trim();
+  const btn  = document.getElementById('verify-btn');
+  const spin = document.getElementById('spinner');
+  const lbl  = document.getElementById('btn-label');
+  const res  = document.getElementById('result-card');
+  const err  = document.getElementById('err-box');
+  const inp  = document.getElementById('cnic-input');
+
+  if (cnic.length !== 13) { inp.classList.add('err'); inp.focus(); setTimeout(() => inp.classList.remove('err'), 2200); return; }
+
+  btn.disabled = true; spin.style.display = 'block'; lbl.style.display = 'none';
+  res.classList.remove('show'); err.style.display = 'none';
+
+  setTimeout(() => {
+    spin.style.display = 'none'; lbl.style.display = ''; btn.disabled = false;
+    const d = DEMO[cnic];
+    if (d) {
+      document.getElementById('r-name').textContent    = d.name;
+      document.getElementById('r-father').textContent  = d.father;
+      document.getElementById('r-cnic').textContent    = d.cnic;
+      document.getElementById('r-addr').textContent    = d.addr;
+      document.getElementById('r-weapon').textContent  = d.weapon;
+      document.getElementById('r-lnodate').textContent = d.lnodate;
+      const vEl = document.getElementById('r-validity');
+      vEl.textContent = d.validity;
+      const expired = d.validity.toLowerCase().includes('expired');
+      vEl.style.color = expired ? '#f87171' : '#4ade80';
+      vEl.style.fontWeight = '600';
+      setTimeout(() => res.classList.add('show'), 40);
+    } else {
+      err.style.display = 'block';
+    }
+  }, 1700);
+}
+</script>
+</body>
+</html>

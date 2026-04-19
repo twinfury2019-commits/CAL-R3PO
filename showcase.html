@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chaman Arms License — Client Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --green:  #005c2e;
+      --green-d:#003d1f;
+      --green-m:#006633;
+      --gold:   #c8a84b;
+      --bg:     #060d08;
+      --surf:   #0c1a0f;
+      --elev:   #122115;
+      --muted:  #7a9e82;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #000;
+      overflow: hidden;
+      font-family: 'DM Sans', sans-serif;
+      color: #fff;
+      cursor: default;
+    }
+
+    /* ── GRAIN ── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9998; opacity: .5;
+    }
+
+    /* ── LETTERBOX ── */
+    .lb {
+      position: fixed; left: 0; right: 0;
+      z-index: 300;
+      background: #000;
+      transition: height .6s cubic-bezier(.77,0,.175,1);
+    }
+    #lb-t { top: 0;    height: 0; }
+    #lb-b { bottom: 0; height: 0; }
+    body.cinematic #lb-t,
+    body.cinematic #lb-b { height: 52px; }
+
+    /* ── PROGRESS ── */
+    #prog-track {
+      position: fixed; bottom: 52px; left: 0; right: 0;
+      height: 2px; background: rgba(255,255,255,.07); z-index: 200;
+      opacity: 0; transition: opacity .4s;
+    }
+    body.cinematic #prog-track { opacity: 1; }
+    #prog-bar {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--green-m), var(--gold));
+      transition: none;
+    }
+
+    /* ── WATERMARK ── */
+    #wm {
+      position: fixed; bottom: 58px; right: 20px;
+      font-size: .62rem; letter-spacing: .12em; text-transform: uppercase;
+      color: rgba(200,168,75,.3); z-index: 201;
+      opacity: 0; transition: opacity .6s;
+    }
+    body.cinematic #wm { opacity: 1; }
+
+    /* ── SCENE BASE ── */
+    .scene {
+      position: fixed; inset: 0;
+      visibility: hidden; opacity: 0;
+      z-index: 10;
+    }
+    .scene.on  { visibility: visible; opacity: 1; }
+    .scene.out { opacity: 0; z-index: 11; }
+
+    /* ── PLAY OVERLAY ── */
+    #play {
+      position: fixed; inset: 0; z-index: 500;
+      background: radial-gradient(ellipse at 50% 55%, #0d2014 0%, #000 70%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1.75rem;
+      cursor: pointer;
+      transition: opacity .6s ease;
+    }
+    #play .logo { width: 80px; filter: drop-shadow(0 0 20px rgba(0,102,51,.4)); }
+    #play .ring {
+      position: relative;
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--green-m), var(--green-d));
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 0 0 rgba(0,102,51,.4);
+      animation: pulse-ring 2s ease-in-out infinite;
+    }
+    @keyframes pulse-ring {
+      0%,100% { box-shadow: 0 0 0 0 rgba(0,102,51,.4); }
+      50%      { box-shadow: 0 0 0 16px rgba(0,102,51,0); }
+    }
+    #play .title-play {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.5rem,3vw,2rem); font-weight: 700;
+      color: #fff; letter-spacing: .02em; text-align: center;
+    }
+    #play .title-play em { color: var(--gold); font-style: normal; }
+    #play .sub-play {
+      font-size: .75rem; letter-spacing: .16em; text-transform: uppercase;
+      color: rgba(255,255,255,.35); text-align: center;
+    }
+    #play .duration-pill {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(0,102,51,.15); border: 1px solid rgba(0,102,51,.3);
+      border-radius: 100px; padding: .3rem .85rem;
+      font-size: .75rem; color: #4ade80;
+    }
+    #play .duration-pill::before {
+      content: ''; display: block; width: 6px; height: 6px; border-radius: 50%;
+      background: #4ade80; box-shadow: 0 0 8px #4ade80;
+      animation: blink 1.5s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+    /* ═══════════════════════════════════
+       SCENE 0 — TITLE CARD
+    ═══════════════════════════════════ */
+    #s0 {
+      background: #000;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; gap: .0rem;
+    }
+    #s0 .s0-logo  { width: 84px; opacity: 0; transform: scale(.65) translateY(10px); }
+    #s0 .s0-rule  { width: 0; height: 1.5px; background: var(--gold); margin: 1.375rem auto; }
+    #s0 .s0-h     {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.25rem,5.5vw,4.5rem); font-weight: 700;
+      line-height: 1.08; letter-spacing: -.03em; color: #fff;
+      opacity: 0; transform: translateY(22px);
+    }
+    #s0 .s0-h em  { color: var(--gold); font-style: normal; }
+    #s0 .s0-sub   {
+      font-size: .78rem; letter-spacing: .2em; text-transform: uppercase;
+      color: rgba(255,255,255,.35); margin-top: 1.25rem;
+      opacity: 0;
+    }
+
+    /* ═══════════════════════════════════
+       SCENE 1 — HERO / BORDER GATE
+    ═══════════════════════════════════ */
+    #s1 { background: #000; }
+    #s1 .bg {
+      position: absolute; inset: 0;
+      background: url('Website_assets/WhatsApp Image 2026-04-16 at 11.50.28 AM.jpeg') center/cover no-repeat;
+      transform: scale(1.1); will-change: transform;
+    }
+    #s1 .ov {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom,
+        rgba(0,0,0,.1) 0%, rgba(0,0,0,.5) 50%,
+        rgba(0,0,0,.88) 88%, #000 100%);
+    }
+    #s1 .tint {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 28% 60%, rgba(0,92,46,.32) 0%, transparent 52%);
+      mix-blend-mode: overlay;
+    }
+    #s1 .cnt {
+      position: absolute; left: 9%; bottom: 17%;
+    }
+    #s1 .ey  { font-size: .7rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); opacity: 0; margin-bottom: .75rem; }
+    #s1 .h1  {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem,5.5vw,4.75rem); font-weight: 700;
+      line-height: 1.08; letter-spacing: -.03em; color: #fff;
+      text-shadow: 0 2px 24px rgba(0,0,0,.6);
+      opacity: 0; transform: translateY(28px);
+    }
+    #s1 .h1 em { color: var(--gold); font-style: normal; }
+    #s1 .desc {
+      font-size: 1.0625rem; color: rgba(255,255,255,.68); line-height: 1.75;
+      max-width: 480px; margin-top: 1.1rem; opacity: 0;
+    }
+    #s1 .bdg {
+      display: inline-flex; align-items: center; gap: .45rem;
+      margin-top: 1.5rem;
+      background: rgba(0,102,51,.18); border: 1px solid rgba(0,102,51,.45);
+      border-radius: 100px; padding: .38rem 1rem;
+      font-size: .78rem; font-weight: 600; color: #4ade80; opacity: 0;
+    }
+    #s1 .bdg-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #4ade80; box-shadow: 0 0 8px #4ade80;
+      animation: blink 1.6s infinite;
+    }
+
+    /* ═══════════════════════════════════
+       SCENE 2 — CITY GALLERY
+    ═══════════════════════════════════ */
+    #s2 { background: var(--bg); }
+    #s2 .grid {
+      position: absolute; inset: 0;
+      display: grid;
+      grid-template-columns: 1.55fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 7px;
+    }
+    .ci {
+      position: relative; overflow: hidden;
+      opacity: 0; transform: scale(1.06);
+    }
+    .ci img   { width: 100%; height: 100%; object-fit: cover; }
+    .ci .cg   { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.78) 0%, transparent 52%); }
+    .ci .ct   { position: absolute; inset: 0; background: rgba(0,80,40,.22); mix-blend-mode: multiply; }
+    .ci .cl   { position: absolute; bottom: .875rem; left: .875rem; z-index: 2; }
+    .ci .cl-s { font-size: .6rem; letter-spacing: .17em; text-transform: uppercase; color: var(--gold); }
+    .ci .cl-n { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 700; color: #fff; line-height: 1.2; }
+    #ci1 { grid-column:1; grid-row:1/3; }
+    #ci2 { grid-column:2; grid-row:1; }
+    #ci3 { grid-column:3; grid-row:1; }
+    #ci4 { grid-column:2/4; grid-row:2; }
+    #s2 .top-veil {
+      position: absolute; top: 0; left: 0; right: 0; height: 28%;
+      background: linear-gradient(to bottom, rgba(6,13,8,.88) 0%, transparent 100%);
+      z-index: 2;
+    }
+    #s2 .hd {
+      position: absolute; top: 9%; left: 50%; transform: translateX(-50%);
+      text-align: center; z-index: 3; white-space: nowrap;
+    }
+    #s2 .hd .ey {
+      font-size: .68rem; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--gold); opacity: 0; display: block;
+    }
+    #s2 .hd h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.75rem,3.5vw,3rem); font-weight: 700; color: #fff;
+      margin-top: .4rem; opacity: 0; transform: translateY(14px);
+    }
+
+    /* ═══════════════════════════════════
+       SCENE 3 — STATS
+    ═══════════════════════════════════ */
+    #s3 {
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 2.5rem; padding: 2.5rem;
+    }
+    #s3 .hd3 { text-align: center; }
+    #s3 .hd3 .ey { font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); opacity: 0; }
+    #s3 .hd3 h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem,4.5vw,3.5rem); font-weight: 700; color: #fff;
+      margin-top: .5rem; opacity: 0; transform: translateY(16px);
+    }
+    #s3 .hd3 h2 em { color: var(--gold); font-style: normal; }
+    .srow { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.25rem; width: 100%; max-width: 900px; }
+    .sbox {
+      background: var(--surf); border: 1px solid rgba(0,92,46,.2);
+      border-radius: 8px; padding: 1.75rem 1rem; text-align: center;
+      opacity: 0; transform: translateY(22px);
+      box-shadow: 0 2px 16px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .sbox .n {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.75rem; font-weight: 700; color: var(--gold); line-height: 1;
+    }
+    .sbox .l { font-size: .78rem; color: var(--muted); letter-spacing: .05em; margin-top: .35rem; }
+    #s3 .tag { font-size: .9375rem; color: rgba(255,255,255,.35); letter-spacing: .06em; opacity: 0; }
+
+    /* ═══════════════════════════════════
+       SCENE 4 — VERIFY
+    ═══════════════════════════════════ */
+    #s4 { background: var(--bg); display: flex; }
+    #s4 .l4 {
+      flex: 1; padding: 7% 5%;
+      display: flex; flex-direction: column; justify-content: center;
+      border-right: 1px solid rgba(0,92,46,.18);
+    }
+    #s4 .r4 {
+      flex: 1.05; padding: 7% 5%;
+      display: flex; flex-direction: column; justify-content: center;
+      background: var(--surf);
+    }
+    #s4 .ey4    { font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); opacity: 0; margin-bottom: .875rem; }
+    #s4 .h4     {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.9rem,3.5vw,3rem); font-weight: 700; color: #fff;
+      line-height: 1.15; opacity: 0; transform: translateY(18px); margin-bottom: .875rem;
+    }
+    #s4 .d4     { font-size: .9375rem; color: var(--muted); line-height: 1.75; opacity: 0; margin-bottom: 1.75rem; }
+    #s4 .inp-wrap { opacity: 0; margin-bottom: .875rem; }
+    #s4 .flbl   { display: block; font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: .45rem; }
+    #s4 .finp   {
+      width: 100%; background: var(--elev); border: 1px solid rgba(0,92,46,.5);
+      border-radius: 6px; padding: .875rem 1.125rem;
+      font-size: 1.0625rem; font-weight: 500; color: #fff;
+      letter-spacing: .1em; font-family: 'DM Sans', monospace;
+      box-shadow: 0 0 0 3px rgba(0,102,51,.15);
+    }
+    #s4 .fbtn   {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: .6rem;
+      background: linear-gradient(135deg, var(--green-m), var(--green-d));
+      color: #fff; border: none; border-radius: 6px; cursor: pointer;
+      padding: .9rem 2rem; font-family: 'DM Sans', sans-serif;
+      font-size: .875rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      box-shadow: 0 4px 18px rgba(0,102,51,.4);
+      opacity: 0;
+    }
+    /* Result */
+    #s4 .r-ey   { font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); opacity: 0; margin-bottom: .75rem; }
+    .rpanel {
+      background: var(--elev); border: 1px solid rgba(0,92,46,.3);
+      border-radius: 8px; padding: 1.5rem 1.75rem;
+      opacity: 0; transform: translateY(18px);
+      box-shadow: 0 4px 28px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .rhead {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: .875rem; margin-bottom: .375rem;
+      border-bottom: 1px solid rgba(0,92,46,.2);
+    }
+    .rh-t { font-family: 'Cormorant Garamond', serif; font-size: 1.125rem; font-weight: 700; color: #fff; }
+    .rh-s { font-size: .7rem; color: var(--muted); margin-top: 2px; }
+    .vpill {
+      display: inline-flex; align-items: center; gap: .3rem;
+      background: rgba(0,102,51,.15); border: 1px solid rgba(0,102,51,.4);
+      border-radius: 100px; padding: .2rem .7rem;
+      font-size: .7rem; font-weight: 700; color: #4ade80; letter-spacing: .05em;
+    }
+    .rr { display: flex; justify-content: space-between; align-items: center; padding: .5rem 0; border-bottom: 1px solid rgba(0,92,46,.1); }
+    .rr:last-child { border: none; }
+    .rk { font-size: .67rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .rv { font-size: .875rem; font-weight: 500; color: #fff; text-align: right; max-width: 58%; }
+    .rv.mo { font-family: monospace; font-size: .8rem; letter-spacing: .04em; }
+
+    /* ═══════════════════════════════════
+       SCENE 5 — ABOUT
+    ═══════════════════════════════════ */
+    #s5 { background: var(--bg); display: flex; }
+    #s5 .l5 {
+      flex: 1; padding: 7% 5%;
+      display: flex; flex-direction: column; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    #s5 .l5-bg {
+      position: absolute; inset: 0;
+      background: url('Website_assets/WhatsApp Image 2026-04-16 at 12.23.19 PM.jpeg') center/cover no-repeat;
+      filter: brightness(.3) saturate(.6);
+    }
+    #s5 .l5-tint {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, rgba(6,13,8,.1) 0%, rgba(6,13,8,.92) 78%);
+    }
+    #s5 .l5-cnt { position: relative; z-index: 1; }
+    #s5 .ey5    { font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); opacity: 0; margin-bottom: .75rem; }
+    #s5 .h5     {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.75rem,3vw,2.75rem); font-weight: 700; color: #fff;
+      line-height: 1.15; opacity: 0; transform: translateY(14px); margin-bottom: 1rem;
+    }
+    #s5 .body5  { font-size: .875rem; color: rgba(255,255,255,.6); line-height: 1.8; max-width: 360px; opacity: 0; }
+    #s5 .cc5    {
+      margin-top: 1.5rem; padding: 1.125rem 1.375rem;
+      background: rgba(0,92,46,.14); border: 1px solid rgba(0,92,46,.28);
+      border-left: 3px solid var(--gold); border-radius: 5px; opacity: 0;
+    }
+    #s5 .cc5 .cl { font-size: .67rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: .2rem; }
+    #s5 .cc5 .cn { font-size: .875rem; color: #fff; }
+    #s5 .cc5 .cp { font-family: 'Cormorant Garamond', serif; font-size: 1.375rem; font-weight: 700; color: var(--gold); }
+    #s5 .r5 {
+      flex: 1; padding: 7% 5%;
+      display: flex; flex-direction: column; justify-content: center; gap: .8rem;
+      background: var(--surf);
+    }
+    .feat {
+      display: flex; gap: .875rem; align-items: flex-start;
+      background: var(--elev); border: 1px solid rgba(0,92,46,.18); border-radius: 6px;
+      padding: 1.125rem 1.25rem;
+      opacity: 0; transform: translateX(22px);
+      box-shadow: 0 2px 12px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .fi {
+      width: 36px; height: 36px; border-radius: 7px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,102,51,.15); border: 1px solid rgba(0,102,51,.3);
+    }
+    .fi.g { background: rgba(200,168,75,.1); border-color: rgba(200,168,75,.25); }
+    .ft { font-size: .875rem; font-weight: 600; color: #fff; margin-bottom: .15rem; }
+    .fd { font-size: .78rem; color: var(--muted); line-height: 1.6; }
+
+    /* ═══════════════════════════════════
+       SCENE 6 — END CARD
+    ═══════════════════════════════════ */
+    #s6 {
+      background: radial-gradient(ellipse at 50% 60%, #0c1a0f 0%, #000 65%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 3rem;
+    }
+    #s6 .e-logo { width: 78px; opacity: 0; transform: scale(.65) translateY(8px); filter: drop-shadow(0 0 18px rgba(0,102,51,.4)); }
+    #s6 .e-h    {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem,4.5vw,4rem); font-weight: 700;
+      color: #fff; margin-top: 1.5rem; opacity: 0; line-height: 1.1; letter-spacing: -.02em;
+    }
+    #s6 .e-h em { color: var(--gold); font-style: normal; }
+    #s6 .e-sub  { font-size: .78rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 1rem; opacity: 0; }
+    #s6 .e-rule { width: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 1.75rem auto; }
+    #s6 .e-cnt  {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.625rem; font-weight: 600; color: var(--gold); opacity: 0;
+    }
+    #s6 .e-cnt span { font-family: 'DM Sans', sans-serif; font-size: .825rem; color: rgba(255,255,255,.35); display: block; margin-bottom: .25rem; font-weight: 400; letter-spacing: .04em; }
+    #s6 .e-tag  { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.2); margin-top: 2.75rem; opacity: 0; }
+
+  </style>
+</head>
+<body>
+
+<!-- Cinematic bars -->
+<div class="lb" id="lb-t"></div>
+<div class="lb" id="lb-b"></div>
+
+<!-- Progress -->
+<div id="prog-track"><div id="prog-bar"></div></div>
+<div id="wm">DC Office Chaman · Preview</div>
+
+<!-- ── PLAY OVERLAY ── -->
+<div id="play">
+  <img class="logo" src="Website_assets/Logo.png" alt="Balochistan Govt Logo">
+  <div class="ring">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
+      <polygon points="6,3 20,12 6,21"/>
+    </svg>
+  </div>
+  <div>
+    <div class="title-play">Chaman Online<br><em>Arms License</em> Verification</div>
+    <div class="sub-play" style="margin-top:.5rem;">DC Office Chaman · Government of Balochistan</div>
+  </div>
+  <div class="duration-pill">System Preview · ~46 seconds</div>
+  <div class="sub-play">Click anywhere to play</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCENES
+══════════════════════════════════════════ -->
+
+<!-- S0: Title Card -->
+<div class="scene on" id="s0">
+  <img class="s0-logo" src="Website_assets/Logo.png" alt="Logo">
+  <div class="s0-rule" id="s0r"></div>
+  <div class="s0-h" id="s0h">Chaman Online<br><em>Arms License</em><br>Verification</div>
+  <div class="s0-sub" id="s0s">DC Office Chaman &nbsp;·&nbsp; Government of Balochistan</div>
+</div>
+
+<!-- S1: Hero -->
+<div class="scene" id="s1">
+  <div class="bg" id="s1bg"></div>
+  <div class="ov"></div><div class="tint"></div>
+  <div class="cnt">
+    <div class="ey"  id="s1e">Pakistan – Afghanistan Frontier City</div>
+    <div class="h1"  id="s1h">A Digital Gateway to<br><em>Secure Arms</em><br>Verification</div>
+    <div class="desc" id="s1d">Built for the citizens of Chaman — instantly verify registered arms licenses without visiting any office.</div>
+    <div class="bdg"  id="s1b"><div class="bdg-dot"></div>Live Government System</div>
+  </div>
+</div>
+
+<!-- S2: City Gallery -->
+<div class="scene" id="s2">
+  <div class="grid">
+    <div class="ci" id="ci1">
+      <img src="Website_assets/WhatsApp Image 2026-04-16 at 11.50.28 AM.jpeg" alt="Border Gate">
+      <div class="cg"></div><div class="ct"></div>
+      <div class="cl"><div class="cl-s">Pakistan–Afghanistan Border</div><div class="cl-n">Chaman Border Gate</div></div>
+    </div>
+    <div class="ci" id="ci2">
+      <img src="Website_assets/Kojhak Tunnel.jpg" alt="Kojhak Historical">
+      <div class="cg"></div><div class="ct"></div>
+      <div class="cl"><div class="cl-s">Heritage · 1892</div><div class="cl-n">Kojhak Tunnel</div></div>
+    </div>
+    <div class="ci" id="ci3">
+      <img src="Website_assets/WhatsApp Image 2026-04-16 at 12.23.19 PM.jpeg" alt="DC Office">
+      <div class="cg"></div><div class="ct"></div>
+      <div class="cl"><div class="cl-s">Government Building</div><div class="cl-n">DC Office Chaman</div></div>
+    </div>
+    <div class="ci" id="ci4">
+      <img src="Website_assets/WhatsApp Image 2026-04-16 at 11.50.30 AM.jpeg" alt="Kojhak Modern">
+      <div class="cg"></div><div class="ct"></div>
+      <div class="cl"><div class="cl-s">Infrastructure</div><div class="cl-n">Kojhak Rail Tunnel</div></div>
+    </div>
+  </div>
+  <div class="top-veil"></div>
+  <div class="hd">
+    <span class="ey" id="s2e">The City of Chaman</span>
+    <h2 id="s2h">Explore the Historic Frontier</h2>
+  </div>
+</div>
+
+<!-- S3: Stats -->
+<div class="scene" id="s3">
+  <div class="hd3">
+    <div class="ey" id="s3e">Trusted Digital Service</div>
+    <h2 id="s3h">Powering Transparency<br><em>in Chaman</em></h2>
+  </div>
+  <div class="srow">
+    <div class="sbox" id="sb1"><div class="n" id="sn1">0</div><div class="l">Registered Licenses</div></div>
+    <div class="sbox" id="sb2"><div class="n" id="sn2">0</div><div class="l">Verifications Today</div></div>
+    <div class="sbox" id="sb3"><div class="n" id="sn3">0</div><div class="l">Weapon Types Listed</div></div>
+    <div class="sbox" id="sb4"><div class="n">24/7</div><div class="l">System Availability</div></div>
+  </div>
+  <div class="tag" id="s3t">Serving citizens, law enforcement &amp; authorities across Chaman</div>
+</div>
+
+<!-- S4: Verify -->
+<div class="scene" id="s4">
+  <div class="l4">
+    <div class="ey4" id="s4e">Core Feature</div>
+    <div class="h4"  id="s4h">Instant License<br>Verification</div>
+    <div class="d4"  id="s4d">Citizens enter their 13-digit CNIC — the system instantly returns the full registered arms license record from the DC Office database.</div>
+    <div class="inp-wrap" id="s4iw">
+      <span class="flbl">CNIC Number (without dashes)</span>
+      <div class="finp" id="s4inp"></div>
+    </div>
+    <button class="fbtn" id="s4btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Verify License
+    </button>
+  </div>
+  <div class="r4">
+    <div class="r-ey" id="s4re">Verification Result</div>
+    <div class="rpanel" id="s4rp">
+      <div class="rhead">
+        <div><div class="rh-t">License Details</div><div class="rh-s">Officially Registered · DC Office Chaman</div></div>
+        <div class="vpill">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          Verified
+        </div>
+      </div>
+      <div class="rr"><span class="rk">Full Name</span>     <span class="rv">Muhammad Yousaf Khan</span></div>
+      <div class="rr"><span class="rk">Father's Name</span> <span class="rv">Haji Abdul Karim Khan</span></div>
+      <div class="rr"><span class="rk">CNIC</span>          <span class="rv mo">54401-1234567-8</span></div>
+      <div class="rr"><span class="rk">Address</span>       <span class="rv">Satellite Town, Chaman</span></div>
+      <div class="rr"><span class="rk">Weapon Type</span>   <span class="rv">Pistol 9mm (Beretta M9)</span></div>
+      <div class="rr"><span class="rk">License No.</span>   <span class="rv mo">CHA/AL/2021/00341</span></div>
+      <div class="rr"><span class="rk">Issue Date</span>    <span class="rv">15 March 2021</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S5: About -->
+<div class="scene" id="s5">
+  <div class="l5">
+    <div class="l5-bg"></div><div class="l5-tint"></div>
+    <div class="l5-cnt">
+      <div class="ey5" id="s5e">About the System</div>
+      <div class="h5"  id="s5h">Secure, Reliable<br>&amp; Transparent</div>
+      <div class="body5" id="s5b">A platform designed to streamline the verification and authentication of licensed firearms — enhancing public safety, transparency, and accountability across Chaman and beyond.</div>
+      <div class="cc5" id="s5c">
+        <div class="cl">Arms License Incharge — DC Office Chaman</div>
+        <div class="cn">Direct Contact:</div>
+        <div class="cp">0334-3812778</div>
+      </div>
+    </div>
+  </div>
+  <div class="r5">
+    <div class="feat" id="f1">
+      <div class="fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div><div class="ft">Secure &amp; Encrypted</div><div class="fd">All records protected through secure government infrastructure with encryption.</div></div>
+    </div>
+    <div class="feat" id="f2">
+      <div class="fi g"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c8a84b" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div><div class="ft">Instant Verification</div><div class="fd">Real-time CNIC lookup delivers results in seconds — no paperwork, no queues.</div></div>
+    </div>
+    <div class="feat" id="f3">
+      <div class="fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div><div class="ft">Multi-Authority Access</div><div class="fd">Available to license holders, law enforcement &amp; relevant authorities.</div></div>
+    </div>
+    <div class="feat" id="f4">
+      <div class="fi g"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c8a84b" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+      <div><div class="ft">Self-Managed Backend</div><div class="fd">Staff can add, update &amp; manage all records via secure admin panel — no developer needed.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S6: End Card -->
+<div class="scene" id="s6">
+  <img class="e-logo" src="Website_assets/Logo.png" alt="Logo" id="s6l">
+  <div class="e-h"   id="s6h">Chaman Online<br><em>Arms License</em><br>Verification</div>
+  <div class="e-sub" id="s6s">Government of Balochistan · DC Office Chaman</div>
+  <div class="e-rule" id="s6r"></div>
+  <div class="e-cnt"  id="s6c">
+    <span>Arms License Incharge</span>
+    0334-3812778
+  </div>
+  <div class="e-tag"  id="s6t">Professional Web Solution · Ready for Deployment</div>
+</div>
+
+
+<script>
+/* ─── Utility ─── */
+const $ = id => document.getElementById(id);
+const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+
+function tr(el, props, dur, delay = 0) {
+  return new Promise(res => setTimeout(() => {
+    el.style.transition = `all ${dur}ms cubic-bezier(0.16,1,0.3,1)`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      Object.assign(el.style, props);
+      setTimeout(res, dur + 20);
+    }));
+  }, delay));
+}
+
+const on  = (el, delay=0, dur=700) => tr(el, { opacity:'1', transform:'none' }, dur, delay);
+const onO = (el, delay=0, dur=700) => tr(el, { opacity:'1' }, dur, delay);
+
+function countUp(el, target, dur = 1400, suffix = '') {
+  const s = performance.now();
+  (function tick(now) {
+    const t = Math.min((now - s) / dur, 1);
+    el.textContent = Math.floor(ease(t) * target) + suffix;
+    if (t < 1) requestAnimationFrame(tick);
+  })(s);
+}
+
+function typeIn(el, text, speed = 75) {
+  return new Promise(res => {
+    let i = 0;
+    const t = setInterval(() => {
+      el.textContent += text[i++];
+      if (i >= text.length) { clearInterval(t); res(); }
+    }, speed);
+  });
+}
+
+const wait = ms => new Promise(res => setTimeout(res, ms));
+
+/* ─── Scene switch (crossfade 0.85s) ─── */
+function go(fromId, toId) {
+  const from = $(fromId), to = $(toId);
+  to.style.opacity = '0';
+  to.classList.add('on');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    to.style.transition   = 'opacity .85s ease';
+    from.style.transition = 'opacity .85s ease';
+    to.style.opacity   = '1';
+    from.style.opacity = '0';
+    setTimeout(() => from.classList.remove('on'), 900);
+  }));
+}
+
+/* ─── Progress bar ─── */
+const TOTAL = 46000;
+let progStart, progRaf;
+function startProgress() {
+  progStart = performance.now();
+  const bar = $('prog-bar');
+  (function tick() {
+    const pct = Math.min((performance.now() - progStart) / TOTAL * 100, 100);
+    bar.style.width = pct + '%';
+    if (pct < 100) progRaf = requestAnimationFrame(tick);
+  })();
+}
+
+/* ─── Main sequence ─── */
+async function play() {
+  $('play').style.transition = 'opacity .5s ease';
+  $('play').style.opacity = '0';
+  await wait(500);
+  $('play').style.display = 'none';
+
+  document.body.classList.add('cinematic');
+  await wait(600);
+  startProgress();
+
+  /* ── S0: Title (0–5s) ─── */
+  await on($('s0l') /* logo */, 150, 1000).catch(() =>
+    tr(document.querySelector('#s0 .s0-logo'), {opacity:'1',transform:'none'}, 900, 150)
+  );
+  // actually reference by class
+  const s0logo = document.querySelector('#s0 .s0-logo');
+  const s0rule = document.querySelector('#s0 .s0-rule');
+  const s0h    = document.querySelector('#s0 .s0-h');
+  const s0sub  = document.querySelector('#s0 .s0-sub');
+
+  await tr(s0logo, { opacity:'1', transform:'scale(1) translateY(0)' }, 950, 0);
+  await tr(s0rule, { width:'130px' }, 700, 0);
+  await tr(s0h,   { opacity:'1', transform:'translateY(0)' }, 750, 0);
+  await tr(s0sub, { opacity:'1' }, 650, 0);
+  await wait(1600);
+
+  /* ── S1: Hero (5–12s = 7s) ─── */
+  go('s0','s1');
+  const s1bg = $('s1bg');
+  s1bg.style.transition = 'transform 9s cubic-bezier(0.08,0,0.2,1)';
+  setTimeout(() => s1bg.style.transform = 'scale(1.22) translateY(-3%)', 120);
+
+  await wait(500);
+  await tr($('s1e'), { opacity:'1' }, 650, 0);
+  await tr($('s1h'), { opacity:'1', transform:'translateY(0)' }, 800, 0);
+  await tr($('s1d'), { opacity:'1' }, 700, 0);
+  await tr($('s1b'), { opacity:'1' }, 650, 0);
+  await wait(4000);
+
+  /* ── S2: City Gallery (12–18s = 6s) ─── */
+  go('s1','s2');
+  await wait(350);
+  tr($('s2e'), { opacity:'1' }, 550);
+  tr($('s2h'), { opacity:'1', transform:'translateY(0)' }, 650, 120);
+  ['ci1','ci2','ci3','ci4'].forEach((id,i) => {
+    const el = $(id);
+    el.style.transition = `opacity .72s cubic-bezier(.16,1,.3,1), transform .72s cubic-bezier(.16,1,.3,1)`;
+    setTimeout(() => { el.style.opacity='1'; el.style.transform='scale(1)'; }, 200 + i * 220);
+  });
+  await wait(5400);
+
+  /* ── S3: Stats (18–23s = 5s) ─── */
+  go('s2','s3');
+  await wait(350);
+  tr($('s3e'), { opacity:'1' }, 550);
+  tr($('s3h'), { opacity:'1', transform:'translateY(0)' }, 700, 150);
+  ['sb1','sb2','sb3','sb4'].forEach((id,i) => {
+    const el = $(id);
+    el.style.transition = `opacity .68s cubic-bezier(.16,1,.3,1), transform .68s cubic-bezier(.16,1,.3,1)`;
+    setTimeout(() => { el.style.opacity='1'; el.style.transform='translateY(0)'; }, 350 + i * 160);
+  });
+  setTimeout(() => countUp($('sn1'), 1247, 1800, '+'), 550);
+  setTimeout(() => countUp($('sn2'), 38,   1500),       720);
+  setTimeout(() => countUp($('sn3'), 12,   1200),       890);
+  setTimeout(() => tr($('s3t'), { opacity:'1' }, 600), 1300);
+  await wait(4500);
+
+  /* ── S4: Verify (23–34s = 11s) ─── */
+  go('s3','s4');
+  await wait(450);
+  await tr($('s4e'), { opacity:'1' }, 550);
+  await tr($('s4h'), { opacity:'1', transform:'translateY(0)' }, 750);
+  await tr($('s4d'), { opacity:'1' }, 650);
+  await tr($('s4iw'),{ opacity:'1' }, 600);
+  await wait(400);
+
+  // Typing animation
+  await typeIn($('s4inp'), '5440112345678', 85);
+  await wait(350);
+
+  // Button appears + "clicks"
+  await tr($('s4btn'), { opacity:'1' }, 550);
+  await wait(750);
+  $('s4btn').style.transform = 'scale(0.96)';
+  await wait(140);
+  $('s4btn').style.transition = 'transform .35s cubic-bezier(.34,1.56,.64,1)';
+  $('s4btn').style.transform = 'scale(1)';
+  await wait(400);
+
+  // Result appears
+  tr($('s4re'), { opacity:'1' }, 550);
+  await wait(220);
+  const rp = $('s4rp');
+  rp.style.transition = 'opacity .75s cubic-bezier(.16,1,.3,1), transform .75s cubic-bezier(.16,1,.3,1)';
+  rp.style.opacity = '1'; rp.style.transform = 'translateY(0)';
+  await wait(4500);
+
+  /* ── S5: About (34–40s = 6s) ─── */
+  go('s4','s5');
+  await wait(400);
+  tr($('s5e'), { opacity:'1' }, 550);
+  tr($('s5h'), { opacity:'1', transform:'translateY(0)' }, 720, 120);
+  tr($('s5b'), { opacity:'1' }, 650, 250);
+  tr($('s5c'), { opacity:'1' }, 650, 750);
+  ['f1','f2','f3','f4'].forEach((id,i) => {
+    const el = $(id);
+    el.style.transition = `opacity .65s cubic-bezier(.16,1,.3,1), transform .65s cubic-bezier(.16,1,.3,1)`;
+    setTimeout(() => { el.style.opacity='1'; el.style.transform='translateX(0)'; }, 320 + i * 190);
+  });
+  await wait(5400);
+
+  /* ── S6: End Card (40–46s = 6s) ─── */
+  go('s5','s6');
+  await wait(400);
+  await tr($('s6l'), { opacity:'1', transform:'scale(1) translateY(0)' }, 900);
+  await tr($('s6h'), { opacity:'1', transform:'none' }, 800);
+  await tr($('s6s'), { opacity:'1' }, 650);
+  await tr($('s6r'), { width:'220px' }, 750);
+  await tr($('s6c'), { opacity:'1' }, 700);
+  await tr($('s6t'), { opacity:'1' }, 600);
+  await wait(2000);
+
+  cancelAnimationFrame(progRaf);
+  $('prog-bar').style.width = '100%';
+
+  /* Replay */
+  const po = $('play');
+  po.querySelector('.title-play').innerHTML = 'Showcase Complete';
+  po.querySelector('.sub-play').textContent = 'Click to replay';
+  po.querySelector('.duration-pill').textContent = 'Thank you';
+  po.style.display = 'flex';
+  po.style.opacity = '0';
+  await wait(100);
+  po.style.transition = 'opacity .6s ease';
+  po.style.opacity = '1';
+  po.onclick = () => location.reload();
+}
+
+$('play').onclick = play;
+</script>
+</body>
+</html>

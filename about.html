@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | DC Office Chaman Arms Verification</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-deep:    #003d1f;
+      --green-primary: #005c2e;
+      --green-mid:     #006633;
+      --gold:          #c8a84b;
+      --bg-base:       #060d08;
+      --bg-surface:    #0c1a0f;
+      --bg-elevated:   #122115;
+      --text-primary:  #e8f0ea;
+      --text-muted:    #7a9e82;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg-base); color: var(--text-primary); overflow-x: hidden; line-height: 1.6; }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; }
+
+    /* Grain */
+    body::after { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 9999; opacity: .5; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--green-primary); border-radius: 3px; }
+
+    /* ── NAVBAR ── */
+    #navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 500; padding: 1rem 2.5rem; background: rgba(6,13,8,.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 1px 0 rgba(0,92,46,.25), 0 8px 32px rgba(0,0,0,.5); }
+    .nav-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
+    .nav-logo img { width: 42px; height: 42px; object-fit: contain; }
+    .nav-logo-title { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+    .nav-logo-sub { font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(232,240,234,0.78); }
+    .nav-links { display: flex; align-items: center; gap: 2.5rem; }
+    .nav-link { position: relative; color: rgba(232,240,234,.7); text-decoration: none; font-size: .8125rem; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; transition: color .22s ease; }
+    .nav-link::after { content: ''; position: absolute; bottom: -3px; left: 0; right: 100%; height: 1px; background: var(--gold); transition: right .3s cubic-bezier(.16,1,.3,1); }
+    .nav-link:hover, .nav-link.active { color: var(--text-primary); }
+    .nav-link:hover::after, .nav-link.active::after { right: 0; }
+    .nav-cta { text-decoration: none; color: #fff; background: linear-gradient(135deg, var(--green-mid), var(--green-deep)); padding: .5rem 1.375rem; border-radius: 4px; font-size: .8rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; box-shadow: 0 2px 14px rgba(0,102,51,.35); transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease; }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(0,102,51,.5); }
+    .nav-cta:active { transform: translateY(0); }
+    #hamburger { display: none; background: none; border: none; cursor: pointer; color: var(--text-primary); padding: 4px; }
+
+    /* ── MOBILE MENU ── */
+    #mobile-menu { display: none; position: fixed; inset: 0; z-index: 490; background: rgba(6,13,8,.98); backdrop-filter: blur(20px); flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
+    #mobile-menu.open { display: flex; }
+    .mob-link { font-family: 'Cormorant Garamond', serif; font-size: 2.25rem; font-weight: 700; color: var(--text-primary); text-decoration: none; transition: color .2s ease; }
+    .mob-link:hover { color: var(--gold); }
+    #mob-close { position: absolute; top: 1.5rem; right: 2rem; background: none; border: none; cursor: pointer; color: var(--text-primary); }
+
+    /* ── PAGE HERO ── */
+    .page-hero {
+      position: relative; padding-top: 100px; padding-bottom: 4rem;
+      min-height: 380px; display: flex; align-items: center; justify-content: center;
+      text-align: center; overflow: hidden;
+    }
+    .ph-bg { position: absolute; inset: 0; background: url('Website_assets/WhatsApp Image 2026-04-16 at 12.23.19 PM.jpeg') center/cover no-repeat; opacity: .18; }
+    .ph-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(6,13,8,.6) 0%, rgba(6,13,8,.8) 60%, var(--bg-base) 100%); }
+    .ph-glow { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 60%, rgba(0,102,51,.2) 0%, transparent 60%); }
+    .ph-bottom-rule { position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(0,92,46,.4), transparent); }
+    .ph-content { position: relative; z-index: 1; padding: 0 2rem; }
+    .ph-breadcrumb { display: flex; align-items: center; justify-content: center; gap: .5rem; margin-bottom: 1rem; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+    .ph-breadcrumb a { color: var(--text-muted); text-decoration: none; transition: color .2s ease; }
+    .ph-breadcrumb a:hover { color: var(--gold); }
+    .ph-breadcrumb .sep { color: rgba(200,168,75,.4); }
+    .ph-breadcrumb .cur { color: var(--gold); }
+    .ph-eyebrow { font-size: .68rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: .75rem; }
+    .ph-title { font-size: clamp(2.25rem,5vw,4rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; color: #fff; margin-bottom: .875rem; }
+    .ph-title em { color: var(--gold); font-style: normal; }
+    .ph-sub { font-size: 1rem; color: rgba(232,240,234,.6); line-height: 1.75; max-width: 520px; margin: 0 auto; }
+
+    /* ── REVEAL ── */
+    .rv { opacity: 0; transform: translateY(30px); transition: opacity .75s cubic-bezier(.16,1,.3,1), transform .75s cubic-bezier(.16,1,.3,1); }
+    .rv.d1 { transition-delay: .1s; } .rv.d2 { transition-delay: .2s; } .rv.d3 { transition-delay: .3s; }
+    .rv.rx { transform: translateX(24px); }
+    .rv.on { opacity: 1; transform: none; }
+    .s-label { font-size: .68rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: .625rem; }
+
+    /* ── ABOUT SECTION ── */
+    #about { padding: 5rem 2.5rem 6rem; max-width: 1280px; margin: 0 auto; }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+
+    /* Text column */
+    .live-badge { display: inline-flex; align-items: center; gap: .45rem; background: rgba(0,102,51,.12); border: 1px solid rgba(0,102,51,.3); border-radius: 100px; padding: .3rem .9rem; font-size: .78rem; color: #4ade80; margin-bottom: 1.5rem; }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #4ade80; animation: blink 2s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+    .about-h2 { font-size: clamp(1.9rem,4vw,3rem); font-weight: 700; letter-spacing: -.03em; color: var(--text-primary); line-height: 1.15; margin: .5rem 0 1.5rem; }
+    .about-p { font-size: .9375rem; color: var(--text-muted); line-height: 1.82; margin-bottom: 1.1rem; }
+    .contact-box { margin-top: 2rem; padding: 1.25rem 1.5rem; background: var(--bg-surface); border: 1px solid rgba(0,92,46,.22); border-left: 3px solid var(--gold); border-radius: 5px; }
+    .contact-box .c-head { font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: .5rem; }
+    .contact-box .c-name { font-size: .875rem; color: var(--text-muted); margin-bottom: .5rem; }
+    .contact-nums { display: flex; flex-direction: column; gap: .25rem; }
+    .contact-nums a { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 700; color: var(--gold); text-decoration: none; display: flex; align-items: center; gap: .5rem; }
+    .contact-nums a:hover { text-decoration: underline; }
+    .contact-nums .num-label { font-family: 'DM Sans', sans-serif; font-size: .7rem; font-weight: 500; color: var(--text-muted); letter-spacing: .06em; text-transform: uppercase; }
+
+    /* Feature cards */
+    .feat-list { display: flex; flex-direction: column; gap: .9rem; }
+    .feat-card { display: flex; gap: 1rem; align-items: flex-start; background: var(--bg-surface); border: 1px solid rgba(0,92,46,.18); border-radius: 6px; padding: 1.375rem 1.5rem; box-shadow: 0 2px 14px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.03); transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s ease; }
+    .feat-card:hover { transform: translateX(7px); box-shadow: 0 4px 22px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.05); }
+    .feat-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .feat-icon.green { background: rgba(0,102,51,.15); border: 1px solid rgba(0,102,51,.3); }
+    .feat-icon.gold  { background: rgba(200,168,75,.1);  border: 1px solid rgba(200,168,75,.25); }
+    .feat-title { font-weight: 600; color: var(--text-primary); margin-bottom: .2rem; font-size: .9375rem; }
+    .feat-desc  { font-size: .8375rem; color: var(--text-muted); line-height: 1.65; }
+
+    /* ── CTA STRIP ── */
+    #cta-strip {
+      background: var(--bg-surface); border-top: 1px solid rgba(0,92,46,.2); border-bottom: 1px solid rgba(0,92,46,.2);
+      padding: 4rem 2.5rem; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    #cta-strip::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 600px; height: 400px; background: radial-gradient(ellipse, rgba(0,102,51,.1) 0%, transparent 65%); pointer-events: none; }
+    .cta-inner { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+    .cta-inner h2 { font-size: clamp(1.75rem,3.5vw,2.75rem); font-weight: 700; letter-spacing: -.03em; color: var(--text-primary); margin-bottom: .875rem; }
+    .cta-inner h2 em { color: var(--gold); font-style: normal; }
+    .cta-inner p { font-size: .9375rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 2rem; }
+    .cta-btn { display: inline-block; text-decoration: none; color: #fff; background: linear-gradient(135deg, var(--green-mid), var(--green-deep)); padding: .9rem 2.5rem; border-radius: 6px; font-size: .9375rem; font-weight: 600; letter-spacing: .04em; box-shadow: 0 4px 22px rgba(0,102,51,.42); transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease; }
+    .cta-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,102,51,.55); }
+    .cta-btn:active { transform: translateY(0); }
+
+    /* ── FOOTER ── */
+    footer { background: var(--bg-surface); border-top: 1px solid rgba(0,92,46,.2); padding: 3.5rem 2.5rem 2rem; }
+    .footer-inner { max-width: 1280px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; padding-bottom: 2.5rem; margin-bottom: 1.75rem; border-bottom: 1px solid rgba(0,92,46,.15); }
+    .footer-brand { display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem; }
+    .footer-brand img { width: 34px; height: 34px; object-fit: contain; }
+    .footer-brand-name { font-family: 'Cormorant Garamond', serif; font-size: 1.0625rem; font-weight: 700; color: var(--text-primary); }
+    .footer-tagline { font-size: .85rem; color: var(--text-muted); line-height: 1.72; max-width: 280px; }
+    .footer-col-title { font-size: .68rem; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+    .footer-links { display: flex; flex-direction: column; gap: .5rem; }
+    .footer-link { font-size: .875rem; color: var(--text-muted); text-decoration: none; transition: color .2s ease; }
+    .footer-link:hover { color: var(--text-primary); }
+    .footer-contact { font-size: .875rem; color: var(--text-muted); line-height: 1.85; }
+    .footer-contact a { color: var(--gold); text-decoration: none; font-weight: 600; }
+    .footer-contact a:hover { text-decoration: underline; }
+    .footer-bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; }
+    .footer-copy { font-size: .78rem; color: var(--text-muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid > div:first-child { grid-column: 1/-1; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      #hamburger { display: block; }
+      .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+      #about { padding: 4rem 1.5rem 5rem; }
+    }
+    @media (max-width: 480px) {
+      #navbar { padding: 1rem 1.25rem; }
+      .ph-title { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="Website_assets/Logo.png" alt="Government of Balochistan">
+      <div>
+        <div class="nav-logo-title">Chaman Arms Verification</div>
+        <div class="nav-logo-sub">DC Office Chaman · Balochistan</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html"      class="nav-link" data-page="index.html">Home</a>
+      <a href="index.html#city" class="nav-link">Chaman City</a>
+      <a href="verify.html"     class="nav-link" data-page="verify.html">Verify License</a>
+      <a href="about.html"      class="nav-link" data-page="about.html">About Us</a>
+      <a href="verify.html"     class="nav-cta">Verify Now</a>
+    </div>
+    <button id="hamburger" aria-label="Open menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu">
+  <button id="mob-close" aria-label="Close menu">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+  <a href="index.html"      class="mob-link" onclick="closeMob()">Home</a>
+  <a href="index.html#city" class="mob-link" onclick="closeMob()">Chaman City</a>
+  <a href="verify.html"     class="mob-link" onclick="closeMob()">Verify License</a>
+  <a href="about.html"      class="mob-link" onclick="closeMob()">About Us</a>
+</div>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="ph-bg"></div>
+  <div class="ph-overlay"></div>
+  <div class="ph-glow"></div>
+  <div class="ph-bottom-rule"></div>
+  <div class="ph-content">
+    <div class="ph-breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">/</span>
+      <span class="cur">About Us</span>
+    </div>
+    <span class="ph-eyebrow">Our Platform</span>
+    <h1 class="ph-title">About Our<br><em>Verification System</em></h1>
+    <p class="ph-sub">A secure and reliable platform to streamline arms license verification — enhancing public safety and accountability across Chaman.</p>
+  </div>
+</div>
+
+<!-- ABOUT SECTION -->
+<section id="about">
+  <div class="about-grid">
+
+    <!-- Text column -->
+    <div class="rv">
+      <span class="s-label">Who We Are</span>
+      <h2 class="about-h2">Secure, Transparent<br>&amp; Accountable</h2>
+
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        System Active &amp; Secure
+      </div>
+
+      <p class="about-p">Welcome to the Chaman Online Arms Verification System — a secure and reliable platform designed to streamline the verification and authentication of licensed firearms. Our mission is to enhance public safety, transparency, and accountability by providing a digital solution for verifying weapon records efficiently.</p>
+
+      <p class="about-p">In today's fast-paced world, manual verification processes can be time-consuming and prone to errors. Our system leverages modern technology to offer quick, accurate, and user-friendly access to arms registration data for authorized users, law enforcement agencies, and relevant authorities.</p>
+
+      <p class="about-p">We are committed to ensuring data security, privacy, and integrity while supporting government regulations and legal frameworks. Through this platform, we aim to reduce illegal weapon circulation and promote responsible ownership. Our team continuously works to improve the system, making it more efficient, accessible, and trustworthy for all users.</p>
+
+      <div class="contact-box">
+        <div class="c-head">Direct Contact — DC Office Chaman</div>
+        <div class="c-name">Arms License Incharge</div>
+        <div class="contact-nums">
+          <a href="tel:03343812778">
+            0334-3812778
+            <span class="num-label">Mobile</span>
+          </a>
+          <a href="tel:0826612021">
+            0826-612021
+            <span class="num-label">Landline</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature cards -->
+    <div class="feat-list rv d1 rx">
+      <div class="feat-card">
+        <div class="feat-icon green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <div class="feat-title">Secure &amp; Encrypted</div>
+          <div class="feat-desc">All records are protected through secure server infrastructure and access-controlled channels. Your data is never shared.</div>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon gold">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c8a84b" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div>
+          <div class="feat-title">Instant Results</div>
+          <div class="feat-desc">Real-time CNIC lookup delivers complete license information in seconds — no paperwork, no office visit required.</div>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div>
+          <div class="feat-title">Multi-Authority Access</div>
+          <div class="feat-desc">Accessible to registered license holders, law enforcement agencies, and relevant government authorities.</div>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon gold">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c8a84b" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+        </div>
+        <div>
+          <div class="feat-title">Self-Managed Backend</div>
+          <div class="feat-desc">Authorized DC Office staff can add, update, and manage all records directly through a secure admin panel — no developer needed.</div>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2">
+            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <div>
+          <div class="feat-title">24/7 Availability</div>
+          <div class="feat-desc">The system is available around the clock. Citizens can verify their license at any time from any device with internet access.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA STRIP -->
+<section id="cta-strip">
+  <div class="cta-inner rv">
+    <h2>Ready to Verify<br>Your <em>Arms License?</em></h2>
+    <p>Enter your CNIC number and get instant access to your complete registered arms license record in seconds.</p>
+    <a href="verify.html" class="cta-btn">Verify My License &rarr;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="Website_assets/Logo.png" alt="Balochistan Govt">
+          <div class="footer-brand-name">Chaman Arms License Verification</div>
+        </div>
+        <p class="footer-tagline">An official digital service of the Deputy Commissioner Office, Chaman, Government of Balochistan.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Navigation</div>
+        <div class="footer-links">
+          <a href="index.html"      class="footer-link">Home</a>
+          <a href="index.html#city" class="footer-link">Chaman City</a>
+          <a href="verify.html"     class="footer-link">Verify License</a>
+          <a href="about.html"      class="footer-link">About Us</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Contact</div>
+        <div class="footer-contact">
+          DC Office Chaman<br>
+          Chaman, Balochistan, Pakistan<br><br>
+          Arms License Incharge:<br>
+          <a href="tel:03343812778">0334-3812778</a><br>
+          <a href="tel:0826612021">0826-612021</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 DC Office Chaman · Government of Balochistan. All rights reserved.</span>
+      <span class="footer-copy">For authorized use only.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Reveal
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.rv').forEach(el => revealObs.observe(el));
+setTimeout(() => document.querySelectorAll('.rv').forEach(el => { const r = el.getBoundingClientRect(); if (r.top < window.innerHeight) el.classList.add('on'); }), 100);
+
+// Mobile menu
+document.getElementById('hamburger').addEventListener('click', () => { document.getElementById('mobile-menu').classList.add('open'); document.body.style.overflow = 'hidden'; });
+document.getElementById('mob-close').addEventListener('click', closeMob);
+function closeMob() { document.getElementById('mobile-menu').classList.remove('open'); document.body.style.overflow = ''; }
+
+// Active nav link
+const currentPage = location.pathname.split('/').pop() || 'index.html';
+document.querySelectorAll('.nav-link[data-page]').forEach(l => { if (l.dataset.page === currentPage) l.classList.add('active'); });
+</script>
+</body>
+</html>
