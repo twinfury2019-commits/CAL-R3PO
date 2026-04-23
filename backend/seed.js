@@ -15,14 +15,14 @@ const seed = async () => {
 
   // ─── Users ───────────────────────────────────────────────
   const admin = await User.create({
-    username: 'admin',
-    password: 'Admin@1234',
+    username: process.env.SEED_ADMIN_USER || 'admin',
+    password: process.env.SEED_ADMIN_PASS || 'ChangeMe@123',
     role:     'admin'
   });
 
   await User.create({
-    username: 'operator1',
-    password: 'Op@12345',
+    username: process.env.SEED_OP_USER || 'operator1',
+    password: process.env.SEED_OP_PASS || 'ChangeMe@123',
     role:     'operator'
   });
 
