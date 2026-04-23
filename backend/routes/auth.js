@@ -27,12 +27,4 @@ const createUserFields = [
 router.post('/login',       validate(loginFields), login);
 router.post('/create-user', protect, requireRole('admin'), validate(createUserFields), createUser);
 
-// TEMP — remove after use
-const User = require('../models/User');
-router.delete('/delete-user/:username', protect, requireRole('admin'), async (req, res) => {
-  const user = await User.findOneAndDelete({ username: req.params.username.toLowerCase() });
-  if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-  res.json({ success: true, message: `Deleted user: ${user.username}` });
-});
-
 module.exports = router;
