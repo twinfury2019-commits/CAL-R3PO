@@ -27,4 +27,15 @@ const createUserFields = [
 router.post('/login',       validate(loginFields), login);
 router.post('/create-user', protect, requireRole('admin'), validate(createUserFields), createUser);
 
+// TEMP — remove after use
+const User = require('../models/User');
+router.post('/change-password', protect, requireRole('admin'), async (req, res) => {
+  const { username, newPassword } = req.body;
+  const user = await User.findOne({ username: username.toLowerCase() });
+  if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+  user.password = newPassword;
+  await user.save();
+  res.json({ success: true, message: `Password updated for ${user.username}` });
+});
+
 module.exports = router;
