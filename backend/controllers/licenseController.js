@@ -10,19 +10,19 @@ const formatDate = (date) =>
 exports.verifyByCnic = async (req, res, next) => {
   try {
     const cnic = req.params.cnic.replace(/-/g, '');
-
-    if (!/^\d{13}$/.test(cnic)) {
-      return res.status(400).json({ found: false, message: 'CNIC must be 13 digits' });
-    }
-
     const license = await License.findOne({ cnic });
 
     if (!license) {
-      return res.status(404).json({ found: false, message: 'No license record found for this CNIC' });
+      return res.status(404).json({
+        success: false,
+        found:   false,
+        message: 'No license record found for this CNIC'
+      });
     }
 
     res.json({
-      found: true,
+      success: true,
+      found:   true,
       data: {
         name:    license.name,
         father:  license.fatherName,
@@ -41,13 +41,25 @@ exports.verifyByCnic = async (req, res, next) => {
 // POST /license  — admin, operator
 exports.createLicense = async (req, res, next) => {
   try {
-    if (req.body.cnic) {
-      req.body.cnic = req.body.cnic.replace(/-/g, '');
+    const cnic = req.body.cnic.replace(/-/g, '');
+
+    // Explicit duplicate check before insert
+    const existing = await License.findOne({ cnic });
+    if (existing) {
+      return res.status(409).json({
+        success: false,
+        message: 'A license for this CNIC already exists',
+        errors:  [`cnic: ${formatCnic(cnic)} is already registered`]
+      });
     }
 
-    const license = await License.create({ ...req.body, createdBy: req.user._id });
+    const license = await License.create({ ...req.body, cnic, createdBy: req.user._id });
 
-    res.status(201).json({ message: 'License created', license });
+    res.status(201).json({
+      success: true,
+      message: 'License created successfully',
+      data:    license
+    });
   } catch (err) {
     next(err);
   }
@@ -58,6 +70,16 @@ exports.updateLicense = async (req, res, next) => {
   try {
     if (req.body.cnic) {
       req.body.cnic = req.body.cnic.replace(/-/g, '');
+
+      // If CNIC is being changed, check it doesn't clash with another record
+      const clash = await License.findOne({ cnic: req.body.cnic, _id: { $ne: req.params.id } });
+      if (clash) {
+        return res.status(409).json({
+          success: false,
+          message: 'That CNIC is already assigned to a different license',
+          errors:  [`cnic: ${formatCnic(req.body.cnic)} belongs to another record`]
+        });
+      }
     }
 
     const license = await License.findByIdAndUpdate(
@@ -67,10 +89,10 @@ exports.updateLicense = async (req, res, next) => {
     );
 
     if (!license) {
-      return res.status(404).json({ message: 'License not found' });
+      return res.status(404).json({ success: false, message: 'License not found' });
     }
 
-    res.json({ message: 'License updated', license });
+    res.json({ success: true, message: 'License updated successfully', data: license });
   } catch (err) {
     next(err);
   }
@@ -103,10 +125,13 @@ exports.getAllLicenses = async (req, res, next) => {
     ]);
 
     res.json({
-      total,
-      page,
-      pages:    Math.ceil(total / limit),
-      licenses
+      success: true,
+      data: {
+        total,
+        page,
+        pages: Math.ceil(total / limit),
+        licenses
+      }
     });
   } catch (err) {
     next(err);

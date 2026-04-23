@@ -10,21 +10,22 @@ exports.login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
-    if (!username || !password) {
-      return res.status(400).json({ message: 'Username and password are required' });
-    }
-
     const user = await User.findOne({ username: username.toLowerCase() });
 
     if (!user || !(await user.matchPassword(password))) {
-      return res.status(401).json({ message: 'Invalid username or password' });
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid username or password'
+      });
     }
 
     const token = signToken(user._id);
 
     res.json({
+      success: true,
+      message: 'Login successful',
       token,
-      user: {
+      data: {
         id:       user._id,
         username: user.username,
         role:     user.role
@@ -38,16 +39,12 @@ exports.login = async (req, res, next) => {
 exports.createUser = async (req, res, next) => {
   try {
     const { username, password, role } = req.body;
-
-    if (!username || !password) {
-      return res.status(400).json({ message: 'Username and password are required' });
-    }
-
     const user = await User.create({ username, password, role });
 
     res.status(201).json({
+      success: true,
       message: 'User created successfully',
-      user: {
+      data: {
         id:       user._id,
         username: user.username,
         role:     user.role
