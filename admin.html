@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Admin Panel | DC Office Chaman</title>
+  <link rel="icon" type="image/png" href="Website_assets/Logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -252,7 +253,7 @@
   <div id="tabs">
     <button class="tab-btn active" onclick="switchTab('licenses')">All Licenses</button>
     <button class="tab-btn" onclick="switchTab('add')">Add License</button>
-    <button class="tab-btn" onclick="switchTab('users')">Create User</button>
+    <button class="tab-btn" id="tab-users" onclick="switchTab('users')">Create User</button>
   </div>
 
   <!-- Content -->
@@ -495,6 +496,11 @@ function bootDashboard() {
   const dash = document.getElementById('dashboard');
   dash.classList.add('show');
   document.getElementById('tb-username').textContent = user.username || '—';
+
+  if (user.role === 'operator') {
+    document.getElementById('tab-users').style.display = 'none';
+  }
+
   loadLicenses(1);
   loadStats();
 }
@@ -579,6 +585,8 @@ async function loadLicenses(page = 1, search = '') {
 
     const { licenses, total, pages } = data.data;
 
+    const isAdmin = (JSON.parse(localStorage.getItem('cal_user') || '{}')).role === 'admin';
+
     if (!licenses.length) {
       tbody.innerHTML = `<tr><td colspan="7" class="empty-state">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -593,8 +601,8 @@ async function loadLicenses(page = 1, search = '') {
           <td><span class="td-badge ${l.licenseType === 'Balochistan' ? 'bal' : 'all'}">${l.licenseType}</span></td>
           <td style="color:var(--text-muted);font-size:.8rem">${fmtDate(l.issueDate)}</td>
           <td><div class="td-actions">
-            <button class="btn btn-sm btn-edit" onclick='openEdit(${JSON.stringify(l)})'>Edit</button>
-            <button class="btn btn-sm btn-del"  onclick="doDelete('${l._id}','${l.name}')">Delete</button>
+            ${isAdmin ? `<button class="btn btn-sm btn-edit" onclick='openEdit(${JSON.stringify(l)})'>Edit</button>` : ''}
+            <button class="btn btn-sm btn-del" onclick="doDelete('${l._id}','${l.name}')">Delete</button>
           </div></td>
         </tr>`).join('');
     }

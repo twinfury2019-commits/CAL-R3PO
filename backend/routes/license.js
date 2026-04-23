@@ -69,14 +69,12 @@ const licenseFields = [
 // Public — rate limited + CNIC format validated
 router.get('/verify/:cnic', verifyLimiter, validate(cnicParam), verifyByCnic);
 
-// Admin & Operator — all fields validated
-router.post('/license', protect, requireRole('admin', 'operator'), validate(licenseFields), createLicense);
+// Admin & Operator
+router.post('/license',    protect, requireRole('admin', 'operator'), validate(licenseFields), createLicense);
+router.delete('/license/:id', protect, requireRole('admin', 'operator'), deleteLicense);
+router.get('/licenses',    protect, requireRole('admin', 'operator'), getAllLicenses);
 
-// Update — CNIC not required on update, other fields still validated if provided
-router.put('/license/:id', protect, requireRole('admin', 'operator'), updateLicense);
-
-// Admin only
-router.delete('/license/:id', protect, requireRole('admin'), deleteLicense);
-router.get('/licenses', protect, requireRole('admin'), getAllLicenses);
+// Admin only — editing existing records
+router.put('/license/:id', protect, requireRole('admin'), updateLicense);
 
 module.exports = router;
