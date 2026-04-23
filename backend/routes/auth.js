@@ -2,6 +2,7 @@ const router = require('express').Router();
 const { body } = require('express-validator');
 const { login, createUser }    = require('../controllers/authController');
 const { protect, requireRole } = require('../middleware/auth');
+const { loginLimiter }         = require('../middleware/rateLimiter');
 const validate                 = require('../middleware/validate');
 
 const loginFields = [
@@ -24,7 +25,7 @@ const createUserFields = [
     .isIn(['admin', 'operator']).withMessage('Role must be "admin" or "operator"')
 ];
 
-router.post('/login',       validate(loginFields), login);
+router.post('/login',       loginLimiter, validate(loginFields), login);
 router.post('/create-user', protect, requireRole('admin'), validate(createUserFields), createUser);
 
 module.exports = router;

@@ -116,14 +116,16 @@ exports.getAllLicenses = async (req, res, next) => {
   try {
     const page   = Math.max(parseInt(req.query.page)  || 1, 1);
     const limit  = Math.min(parseInt(req.query.limit) || 20, 100);
-    const search = req.query.search ? req.query.search.trim() : '';
+    const rawSearch = req.query.search ? req.query.search.trim().slice(0, 100) : '';
+    // Escape regex special chars to prevent ReDoS from crafted search strings
+    const escapedSearch = rawSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-    const query = search
+    const query = escapedSearch
       ? {
           $or: [
-            { name:      new RegExp(search, 'i') },
-            { cnic:      new RegExp(search, 'i') },
-            { licenseNo: new RegExp(search, 'i') }
+            { name:      new RegExp(escapedSearch, 'i') },
+            { cnic:      new RegExp(escapedSearch, 'i') },
+            { licenseNo: new RegExp(escapedSearch, 'i') }
           ]
         }
       : {};

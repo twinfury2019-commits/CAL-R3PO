@@ -27,9 +27,11 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  res.status(err.status || 500).json({
+  const isProd = process.env.NODE_ENV === 'production';
+  const status  = err.status || 500;
+  res.status(status).json({
     success: false,
-    message: err.message || 'Internal server error'
+    message: status === 500 && isProd ? 'Internal server error' : (err.message || 'Internal server error')
   });
 };
 

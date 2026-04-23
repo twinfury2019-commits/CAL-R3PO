@@ -1,7 +1,8 @@
-const express    = require('express');
-const cors       = require('cors');
-const dotenv     = require('dotenv');
-const connectDB  = require('./config/db');
+const express      = require('express');
+const cors         = require('cors');
+const helmet       = require('helmet');
+const dotenv       = require('dotenv');
+const connectDB    = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
 dotenv.config();
@@ -12,6 +13,7 @@ const app = express();
 const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:5500,http://127.0.0.1:5500')
   .split(',').map(o => o.trim());
 
+app.use(helmet());
 app.use(cors({
   origin: (origin, cb) => {
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
