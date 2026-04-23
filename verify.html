@@ -383,7 +383,7 @@ document.getElementById('cnic-input').addEventListener('keydown', e => { if (e.k
 
 const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:5000'
-  : 'REPLACE_WITH_RENDER_URL';
+  : 'https://cal-r3po.onrender.com';
 
 async function doVerify() {
   const cnic = document.getElementById('cnic-input').value.trim();
