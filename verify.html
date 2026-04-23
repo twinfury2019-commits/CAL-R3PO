@@ -305,7 +305,7 @@
         <div class="r-row"><span class="r-key">Address</span>              <span class="r-val" id="r-addr">—</span></div>
         <div class="r-row"><span class="r-key">Weapon No &amp; Type</span> <span class="r-val" id="r-weapon">—</span></div>
         <div class="r-row"><span class="r-key">License No &amp; Date</span><span class="r-val mono" id="r-lnodate">—</span></div>
-        <div class="r-row"><span class="r-key">Validity</span>             <span class="r-val" id="r-validity">—</span></div>
+        <div class="r-row"><span class="r-key">License Type</span>         <span class="r-val" id="r-lictype">—</span></div>
       </div>
 
       <p class="verify-notice">
@@ -386,7 +386,7 @@ const DEMO = {
     addr:     'House #12, Satellite Town, Chaman',
     weapon:   'PK-2024-07834 · Pistol 9mm (Beretta M9)',
     lnodate:  'CHA/AL/2021/00341 · 15 March 2021',
-    validity: 'Valid until 15 March 2026'
+    lictype:  'All Pakistan'
   },
   '5440198765432': {
     name:     'Abdul Qadir Baloch',
@@ -395,7 +395,7 @@ const DEMO = {
     addr:     'Ward 5, Near Customs Office, Chaman',
     weapon:   'SG-2023-04512 · Shotgun 12-Bore (Double Barrel)',
     lnodate:  'CHA/AL/2020/00187 · 04 July 2020',
-    validity: 'Expired — Renewal Required'
+    lictype:  'Balochistan'
   }
 };
 
@@ -423,11 +423,7 @@ function doVerify() {
       document.getElementById('r-addr').textContent    = d.addr;
       document.getElementById('r-weapon').textContent  = d.weapon;
       document.getElementById('r-lnodate').textContent = d.lnodate;
-      const vEl = document.getElementById('r-validity');
-      vEl.textContent = d.validity;
-      const expired = d.validity.toLowerCase().includes('expired');
-      vEl.style.color = expired ? '#f87171' : '#4ade80';
-      vEl.style.fontWeight = '600';
+      document.getElementById('r-lictype').textContent = d.lictype;
       setTimeout(() => res.classList.add('show'), 40);
     } else {
       err.style.display = 'block';
