@@ -1,0 +1,27 @@
+My Cients wants a website for Chaman Online Arms License Verification
+
+For example anyone who got a license can go & check this website & Put in Their CNIC witout dashes & they will get information based on their Registration 
+
+
+Name
+
+Father name
+
+Cnic
+
+Address
+
+Weapon no & type
+
+License no & date
+
+Kinda like this The website should be dynamic & we & advanced with proper Animations & Dynamic Dashboard The Data Will Be updated by the user In the backend By themselves we'll them the acccess after puting Live on some domain.
+
+First is the main Home Tab of the website That will contain some Images & details of Chaman City That are attached in Home page items folder
+Aslo A Map of Chaman City But a bit advanced the website the client have shared also got chaman city map but it's google map Not too fancy
+
+The Second and main function will be about Online Arms License Verification where the public can just put their CNIC & They will get details just like i told you before
+
+The third & Last Section Will be about Us.THe About us TXT is also sepereately Attached.
+
+Link of the Concept of the client website which is very basic but we are creating something amazing https://chaman.gob.pk/

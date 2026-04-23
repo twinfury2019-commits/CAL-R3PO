@@ -9,7 +9,16 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:5500,http://127.0.0.1:5500')
+  .split(',').map(o => o.trim());
+
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS: origin not allowed — ${origin}`));
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 app.use('/auth',  require('./routes/auth'));
@@ -28,5 +37,6 @@ app.listen(PORT, () => {
   console.log('  POST   /license           (admin/operator)');
   console.log('  PUT    /license/:id       (admin/operator)');
   console.log('  GET    /licenses          (admin)');
+  console.log('  DELETE /license/:id       (admin)');
   console.log('─────────────────────────────────────────────');
 });

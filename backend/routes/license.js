@@ -4,6 +4,7 @@ const {
   verifyByCnic,
   createLicense,
   updateLicense,
+  deleteLicense,
   getAllLicenses
 } = require('../controllers/licenseController');
 const { protect, requireRole } = require('../middleware/auth');
@@ -75,6 +76,7 @@ router.post('/license', protect, requireRole('admin', 'operator'), validate(lice
 router.put('/license/:id', protect, requireRole('admin', 'operator'), updateLicense);
 
 // Admin only
+router.delete('/license/:id', protect, requireRole('admin'), deleteLicense);
 router.get('/licenses', protect, requireRole('admin'), getAllLicenses);
 
 module.exports = router;

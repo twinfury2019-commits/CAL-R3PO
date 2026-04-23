@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<!-- Developed & Designed by Valourim Phoenix | valourimphoenix.com -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin Panel | DC Office Chaman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-deep:    #003d1f;
+      --green-primary: #005c2e;
+      --green-mid:     #006633;
+      --gold:          #c8a84b;
+      --bg-base:       #060d08;
+      --bg-surface:    #0c1a0f;
+      --bg-elevated:   #122115;
+      --text-primary:  #e8f0ea;
+      --text-muted:    #7a9e82;
+      --red:           #f87171;
+      --green-ok:      #4ade80;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg-base); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--green-primary); border-radius: 3px; }
+
+    /* ── INPUT BASE ── */
+    .field-label { display: block; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: .45rem; }
+    .field-input, .field-select {
+      width: 100%; background: var(--bg-elevated); border: 1px solid rgba(0,92,46,.4);
+      border-radius: 6px; padding: .75rem 1rem; font-family: 'DM Sans', sans-serif;
+      font-size: .9375rem; color: var(--text-primary); outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field-input:focus, .field-select:focus { border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(0,102,51,.18); }
+    .field-input::placeholder { color: var(--text-muted); }
+    .field-select option { background: var(--bg-elevated); }
+    .field-input.err { border-color: #dc2626; }
+
+    /* ── BUTTONS ── */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: none; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; letter-spacing: .05em; transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s, opacity .18s; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+    .btn-primary { background: linear-gradient(135deg, var(--green-mid), var(--green-deep)); color: #fff; padding: .75rem 1.75rem; font-size: .875rem; box-shadow: 0 3px 14px rgba(0,102,51,.35); }
+    .btn-primary:hover { box-shadow: 0 6px 20px rgba(0,102,51,.5); }
+    .btn-sm { padding: .35rem .85rem; font-size: .75rem; border-radius: 4px; }
+    .btn-edit { background: rgba(200,168,75,.12); border: 1px solid rgba(200,168,75,.3); color: var(--gold); }
+    .btn-edit:hover { background: rgba(200,168,75,.22); }
+    .btn-del  { background: rgba(220,38,38,.1);  border: 1px solid rgba(220,38,38,.3);  color: var(--red); }
+    .btn-del:hover  { background: rgba(220,38,38,.2); }
+    .btn-ghost { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: var(--text-primary); padding: .75rem 1.5rem; font-size: .875rem; }
+
+    /* ── ALERTS ── */
+    .alert { padding: .75rem 1rem; border-radius: 6px; font-size: .875rem; margin-top: .75rem; display: none; }
+    .alert.show { display: block; }
+    .alert-ok  { background: rgba(74,222,128,.1); border: 1px solid rgba(74,222,128,.3);  color: var(--green-ok); }
+    .alert-err { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.3); color: var(--red); }
+
+    /* ═══════════════════════════════════════════════
+       LOGIN SCREEN
+    ═══════════════════════════════════════════════ */
+    #login-screen {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 2rem;
+      background: radial-gradient(ellipse at 30% 60%, rgba(0,102,51,.12) 0%, transparent 55%),
+                  radial-gradient(ellipse at 70% 20%, rgba(200,168,75,.06) 0%, transparent 50%);
+    }
+    .login-card {
+      width: 100%; max-width: 420px;
+      background: var(--bg-surface); border: 1px solid rgba(0,92,46,.3); border-radius: 10px;
+      padding: 2.75rem 2.5rem;
+      box-shadow: 0 4px 32px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .login-logo { display: flex; align-items: center; gap: .75rem; margin-bottom: 2rem; }
+    .login-logo img { width: 38px; height: 38px; object-fit: contain; }
+    .login-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 1.0625rem; font-weight: 700; line-height: 1.2; }
+    .login-logo-sub { font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); }
+    .login-heading { font-size: 1.75rem; font-weight: 700; color: var(--text-primary); margin-bottom: .375rem; }
+    .login-sub { font-size: .85rem; color: var(--text-muted); margin-bottom: 1.75rem; }
+    .login-field { margin-bottom: 1.125rem; }
+    .login-btn { width: 100%; margin-top: .5rem; padding: .9rem; font-size: .9375rem; }
+
+    /* ═══════════════════════════════════════════════
+       DASHBOARD LAYOUT
+    ═══════════════════════════════════════════════ */
+    #dashboard { display: none; min-height: 100vh; flex-direction: column; }
+    #dashboard.show { display: flex; }
+
+    /* Topbar */
+    #topbar {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(6,13,8,.97); backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,92,46,.25);
+      padding: .875rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .tb-left { display: flex; align-items: center; gap: .875rem; }
+    .tb-logo { display: flex; align-items: center; gap: .625rem; text-decoration: none; }
+    .tb-logo img { width: 32px; height: 32px; object-fit: contain; }
+    .tb-title { font-family: 'Cormorant Garamond', serif; font-size: 1.0625rem; font-weight: 700; color: var(--text-primary); }
+    .tb-badge { font-size: .62rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; background: rgba(0,102,51,.2); border: 1px solid rgba(0,102,51,.4); color: var(--green-ok); border-radius: 100px; padding: .15rem .6rem; }
+    .tb-right { display: flex; align-items: center; gap: 1rem; }
+    .tb-user { font-size: .8rem; color: var(--text-muted); }
+    .tb-user strong { color: var(--text-primary); text-transform: uppercase; }
+    .tb-logout { background: none; border: 1px solid rgba(0,92,46,.3); border-radius: 5px; color: var(--text-muted); font-size: .78rem; font-family: 'DM Sans', sans-serif; padding: .35rem .875rem; cursor: pointer; transition: border-color .2s, color .2s; }
+    .tb-logout:hover { border-color: var(--red); color: var(--red); }
+
+    /* Tabs */
+    #tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(0,92,46,.2); background: var(--bg-surface); padding: 0 2rem; }
+    .tab-btn { position: relative; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: .8125rem; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--text-muted); padding: 1rem 1.25rem; transition: color .2s; }
+    .tab-btn::after { content: ''; position: absolute; bottom: 0; left: 0; right: 100%; height: 2px; background: var(--gold); transition: right .25s cubic-bezier(.16,1,.3,1); }
+    .tab-btn.active { color: var(--text-primary); }
+    .tab-btn.active::after { right: 0; }
+    .tab-btn:hover { color: var(--text-primary); }
+
+    /* Content */
+    #content { flex: 1; padding: 2rem; max-width: 1280px; width: 100%; margin: 0 auto; }
+
+    /* Stats row */
+    .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: var(--bg-surface); border: 1px solid rgba(0,92,46,.2); border-radius: 7px; padding: 1.25rem 1.5rem; }
+    .stat-card .num { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; color: var(--gold); line-height: 1; }
+    .stat-card .lbl { font-size: .78rem; color: var(--text-muted); margin-top: .25rem; }
+
+    /* Panel */
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .panel-card { background: var(--bg-surface); border: 1px solid rgba(0,92,46,.2); border-radius: 8px; padding: 1.75rem 2rem; }
+    .panel-title { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(0,92,46,.15); }
+
+    /* Form grid */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.5rem; }
+    .form-grid .full { grid-column: 1/-1; }
+    .form-actions { margin-top: 1.5rem; display: flex; gap: 1rem; align-items: center; }
+
+    /* Licenses table */
+    .tbl-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; gap: 1rem; flex-wrap: wrap; }
+    .tbl-search { position: relative; flex: 1; min-width: 220px; }
+    .tbl-search input { width: 100%; background: var(--bg-elevated); border: 1px solid rgba(0,92,46,.35); border-radius: 6px; padding: .65rem 1rem .65rem 2.5rem; font-family: 'DM Sans', sans-serif; font-size: .875rem; color: var(--text-primary); outline: none; transition: border-color .2s; }
+    .tbl-search input:focus { border-color: var(--green-mid); }
+    .tbl-search input::placeholder { color: var(--text-muted); }
+    .tbl-search svg { position: absolute; left: .75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+    .tbl-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .8375rem; }
+    thead th { text-align: left; font-size: .65rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); padding: .75rem 1rem; border-bottom: 1px solid rgba(0,92,46,.2); white-space: nowrap; }
+    tbody td { padding: .875rem 1rem; border-bottom: 1px solid rgba(0,92,46,.1); color: var(--text-primary); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(0,92,46,.05); }
+    .td-cnic { font-family: monospace; letter-spacing: .04em; color: var(--text-muted); font-size: .8rem; }
+    .td-badge { display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .08em; padding: .2rem .6rem; border-radius: 100px; }
+    .td-badge.bal { background: rgba(0,102,51,.15); border: 1px solid rgba(0,102,51,.35); color: var(--green-ok); }
+    .td-badge.all { background: rgba(200,168,75,.12); border: 1px solid rgba(200,168,75,.3); color: var(--gold); }
+    .td-actions { display: flex; gap: .5rem; }
+    .empty-state { text-align: center; padding: 3rem; color: var(--text-muted); }
+    .empty-state svg { margin-bottom: 1rem; opacity: .4; }
+
+    /* Pagination */
+    .pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 1.25rem; flex-wrap: wrap; gap: .75rem; }
+    .pg-info { font-size: .8rem; color: var(--text-muted); }
+    .pg-btns { display: flex; gap: .5rem; }
+    .pg-btn { background: var(--bg-elevated); border: 1px solid rgba(0,92,46,.25); border-radius: 5px; color: var(--text-muted); font-size: .8rem; font-family: 'DM Sans', sans-serif; padding: .35rem .875rem; cursor: pointer; transition: border-color .2s, color .2s; }
+    .pg-btn:hover:not(:disabled) { border-color: var(--green-mid); color: var(--text-primary); }
+    .pg-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .pg-btn.active { background: var(--green-mid); border-color: var(--green-mid); color: #fff; }
+
+    /* ── MODAL ── */
+    .modal-bg { position: fixed; inset: 0; z-index: 800; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+    .modal-bg.open { display: flex; }
+    .modal { background: var(--bg-surface); border: 1px solid rgba(0,92,46,.3); border-radius: 10px; width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; padding: 2rem; box-shadow: 0 16px 48px rgba(0,0,0,.6); }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .modal-title { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); }
+    .modal-close { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.25rem; line-height: 1; transition: color .2s; }
+    .modal-close:hover { color: var(--text-primary); }
+
+    /* Spinner */
+    .spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      #content { padding: 1.25rem; }
+      #topbar { padding: .875rem 1.25rem; }
+      #tabs { padding: 0 1rem; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="Website_assets/Logo.png" alt="Logo">
+      <div>
+        <div class="login-logo-text">Chaman Arms Verification</div>
+        <div class="login-logo-sub">DC Office Chaman · Admin Panel</div>
+      </div>
+    </div>
+    <h2 class="login-heading">Staff Login</h2>
+    <p class="login-sub">Authorized personnel only</p>
+
+    <div class="login-field">
+      <label class="field-label" for="l-user">Username</label>
+      <input class="field-input" id="l-user" type="text" placeholder="Enter username" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label class="field-label" for="l-pass">Password</label>
+      <input class="field-input" id="l-pass" type="password" placeholder="Enter password" autocomplete="current-password">
+    </div>
+
+    <div class="alert alert-err" id="login-err"></div>
+
+    <button class="btn btn-primary login-btn" id="login-btn" onclick="doLogin()">
+      <span id="login-label">Sign In</span>
+      <div class="spinner" id="login-spin" style="display:none"></div>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     DASHBOARD
+══════════════════════════════════════════════════════════ -->
+<div id="dashboard">
+
+  <!-- Topbar -->
+  <div id="topbar">
+    <div class="tb-left">
+      <a href="index.html" class="tb-logo">
+        <img src="Website_assets/Logo.png" alt="Logo">
+        <span class="tb-title">Arms Admin</span>
+      </a>
+      <span class="tb-badge">Admin Panel</span>
+    </div>
+    <div class="tb-right">
+      <span class="tb-user">Logged in as <strong id="tb-username">—</strong></span>
+      <button class="tb-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div id="tabs">
+    <button class="tab-btn active" onclick="switchTab('licenses')">All Licenses</button>
+    <button class="tab-btn" onclick="switchTab('add')">Add License</button>
+    <button class="tab-btn" onclick="switchTab('users')">Create User</button>
+  </div>
+
+  <!-- Content -->
+  <div id="content">
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="num" id="stat-total">—</div><div class="lbl">Total Licenses</div></div>
+      <div class="stat-card"><div class="num" id="stat-bal">—</div><div class="lbl">Balochistan</div></div>
+      <div class="stat-card"><div class="num" id="stat-all">—</div><div class="lbl">All Pakistan</div></div>
+    </div>
+
+    <!-- ── PANEL: ALL LICENSES ── -->
+    <div class="panel active" id="panel-licenses">
+      <div class="panel-card">
+        <div class="tbl-header">
+          <h2 class="panel-title" style="margin:0;border:none;padding:0">License Records</h2>
+          <div class="tbl-search">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-input" placeholder="Search by name, CNIC or license no…" oninput="onSearch(this.value)">
+          </div>
+        </div>
+
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>CNIC</th>
+                <th>Name</th>
+                <th>License No</th>
+                <th>Weapon Type</th>
+                <th>License Type</th>
+                <th>Issue Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tbl-body">
+              <tr><td colspan="7" class="empty-state">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <span class="pg-info" id="pg-info"></span>
+          <div class="pg-btns" id="pg-btns"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL: ADD LICENSE ── -->
+    <div class="panel" id="panel-add">
+      <div class="panel-card">
+        <div class="panel-title">Add New License</div>
+        <div class="form-grid">
+          <div>
+            <label class="field-label">CNIC <small style="color:var(--text-muted)">(13 digits, no dashes)</small></label>
+            <input class="field-input" id="a-cnic" type="text" maxlength="13" placeholder="5440112345678" inputmode="numeric">
+          </div>
+          <div>
+            <label class="field-label">Full Name</label>
+            <input class="field-input" id="a-name" type="text" placeholder="Muhammad Yousaf Khan">
+          </div>
+          <div>
+            <label class="field-label">Father Name</label>
+            <input class="field-input" id="a-father" type="text" placeholder="Haji Abdul Karim Khan">
+          </div>
+          <div class="full">
+            <label class="field-label">Address</label>
+            <input class="field-input" id="a-addr" type="text" placeholder="House #12, Satellite Town, Chaman">
+          </div>
+          <div>
+            <label class="field-label">License No</label>
+            <input class="field-input" id="a-lno" type="text" placeholder="CHA/AL/2024/00001">
+          </div>
+          <div>
+            <label class="field-label">Weapon No</label>
+            <input class="field-input" id="a-wno" type="text" placeholder="PK-2024-07834">
+          </div>
+          <div>
+            <label class="field-label">Weapon Type</label>
+            <input class="field-input" id="a-wtype" type="text" placeholder="Pistol 9mm (Beretta M9)">
+          </div>
+          <div>
+            <label class="field-label">License Type</label>
+            <select class="field-input field-select" id="a-ltype">
+              <option value="">Select type…</option>
+              <option value="Balochistan">Balochistan</option>
+              <option value="All Pakistan">All Pakistan</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Issue Date</label>
+            <input class="field-input" id="a-issue" type="date">
+          </div>
+          <div>
+            <label class="field-label">Expiry Date</label>
+            <input class="field-input" id="a-expiry" type="date">
+          </div>
+        </div>
+
+        <div class="alert alert-ok"  id="add-ok"></div>
+        <div class="alert alert-err" id="add-err"></div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" id="add-btn" onclick="doAddLicense()">
+            <span id="add-label">Save License</span>
+            <div class="spinner" id="add-spin" style="display:none"></div>
+          </button>
+          <button class="btn btn-ghost" onclick="resetAddForm()">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL: CREATE USER ── -->
+    <div class="panel" id="panel-users">
+      <div class="panel-card" style="max-width:480px">
+        <div class="panel-title">Create Staff Account</div>
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+          <div>
+            <label class="field-label">Username</label>
+            <input class="field-input" id="u-user" type="text" placeholder="e.g. operator2">
+          </div>
+          <div>
+            <label class="field-label">Password</label>
+            <input class="field-input" id="u-pass" type="password" placeholder="Min 6 characters">
+          </div>
+          <div>
+            <label class="field-label">Role</label>
+            <select class="field-input field-select" id="u-role">
+              <option value="operator">Operator</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="alert alert-ok"  id="user-ok"></div>
+        <div class="alert alert-err" id="user-err"></div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" id="user-btn" onclick="doCreateUser()">
+            <span id="user-label">Create Account</span>
+            <div class="spinner" id="user-spin" style="display:none"></div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /dashboard -->
+
+<!-- ═══════════════════════════════════════════════════════
+     EDIT MODAL
+══════════════════════════════════════════════════════════ -->
+<div class="modal-bg" id="edit-modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Edit License</span>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="form-grid">
+      <input type="hidden" id="e-id">
+      <div>
+        <label class="field-label">CNIC</label>
+        <input class="field-input" id="e-cnic" type="text" maxlength="13" placeholder="13 digits, no dashes">
+      </div>
+      <div>
+        <label class="field-label">Full Name</label>
+        <input class="field-input" id="e-name" type="text">
+      </div>
+      <div>
+        <label class="field-label">Father Name</label>
+        <input class="field-input" id="e-father" type="text">
+      </div>
+      <div class="full">
+        <label class="field-label">Address</label>
+        <input class="field-input" id="e-addr" type="text">
+      </div>
+      <div>
+        <label class="field-label">License No</label>
+        <input class="field-input" id="e-lno" type="text">
+      </div>
+      <div>
+        <label class="field-label">Weapon No</label>
+        <input class="field-input" id="e-wno" type="text">
+      </div>
+      <div>
+        <label class="field-label">Weapon Type</label>
+        <input class="field-input" id="e-wtype" type="text">
+      </div>
+      <div>
+        <label class="field-label">License Type</label>
+        <select class="field-input field-select" id="e-ltype">
+          <option value="Balochistan">Balochistan</option>
+          <option value="All Pakistan">All Pakistan</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">Issue Date</label>
+        <input class="field-input" id="e-issue" type="date">
+      </div>
+      <div>
+        <label class="field-label">Expiry Date</label>
+        <input class="field-input" id="e-expiry" type="date">
+      </div>
+    </div>
+
+    <div class="alert alert-ok"  id="edit-ok"></div>
+    <div class="alert alert-err" id="edit-err"></div>
+
+    <div class="form-actions">
+      <button class="btn btn-primary" id="edit-btn" onclick="doEditLicense()">
+        <span id="edit-label">Save Changes</span>
+        <div class="spinner" id="edit-spin" style="display:none"></div>
+      </button>
+      <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Config ─────────────────────────────────────────────────────────────────
+const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:5000'
+  : 'REPLACE_WITH_RENDER_URL';
+
+// ── State ──────────────────────────────────────────────────────────────────
+let token       = localStorage.getItem('cal_token');
+let currentPage = 1;
+let searchTimer = null;
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('l-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  if (token) bootDashboard();
+});
+
+function bootDashboard() {
+  const user = JSON.parse(localStorage.getItem('cal_user') || '{}');
+  document.getElementById('login-screen').style.display = 'none';
+  const dash = document.getElementById('dashboard');
+  dash.classList.add('show');
+  document.getElementById('tb-username').textContent = user.username || '—';
+  loadLicenses(1);
+  loadStats();
+}
+
+// ── Auth ───────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const username = document.getElementById('l-user').value.trim();
+  const password = document.getElementById('l-pass').value;
+  const errEl    = document.getElementById('login-err');
+  const btn      = document.getElementById('login-btn');
+  const lbl      = document.getElementById('login-label');
+  const spin     = document.getElementById('login-spin');
+
+  if (!username || !password) { showAlert(errEl, 'Username and password are required', 'err'); return; }
+
+  btn.disabled = true; lbl.style.display = 'none'; spin.style.display = 'block'; errEl.classList.remove('show');
+
+  try {
+    const res  = await fetch(`${API}/auth/login`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      token = data.token;
+      localStorage.setItem('cal_token', token);
+      localStorage.setItem('cal_user', JSON.stringify(data.data));
+      bootDashboard();
+    } else {
+      showAlert(errEl, data.message || 'Login failed', 'err');
+    }
+  } catch {
+    showAlert(errEl, 'Cannot reach server. Make sure the backend is running.', 'err');
+  } finally {
+    btn.disabled = false; lbl.style.display = ''; spin.style.display = 'none';
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('cal_token');
+  localStorage.removeItem('cal_user');
+  token = null;
+  document.getElementById('dashboard').classList.remove('show');
+  document.getElementById('login-screen').style.display = '';
+  document.getElementById('l-pass').value = '';
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(`panel-${name}`).classList.add('active');
+}
+
+// ── Stats ──────────────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const res  = await authFetch(`${API}/licenses?limit=1000`);
+    const data = await res.json();
+    if (!data.success) return;
+    const licenses = data.data.licenses;
+    document.getElementById('stat-total').textContent = data.data.total;
+    document.getElementById('stat-bal').textContent   = licenses.filter(l => l.licenseType === 'Balochistan').length;
+    document.getElementById('stat-all').textContent   = licenses.filter(l => l.licenseType === 'All Pakistan').length;
+  } catch {}
+}
+
+// ── Licenses Table ─────────────────────────────────────────────────────────
+async function loadLicenses(page = 1, search = '') {
+  currentPage = page;
+  const tbody = document.getElementById('tbl-body');
+  tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Loading…</td></tr>';
+
+  try {
+    const url = `${API}/licenses?page=${page}&limit=10${search ? `&search=${encodeURIComponent(search)}` : ''}`;
+    const res  = await authFetch(url);
+    if (res.status === 401) { doLogout(); return; }
+    const data = await res.json();
+    if (!data.success) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Failed to load</td></tr>'; return; }
+
+    const { licenses, total, pages } = data.data;
+
+    if (!licenses.length) {
+      tbody.innerHTML = `<tr><td colspan="7" class="empty-state">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <p>No records found</p></td></tr>`;
+    } else {
+      tbody.innerHTML = licenses.map(l => `
+        <tr>
+          <td class="td-cnic">${fmtCnic(l.cnic)}</td>
+          <td>${l.name}</td>
+          <td style="font-family:monospace;font-size:.8rem">${l.licenseNo}</td>
+          <td>${l.weaponType}</td>
+          <td><span class="td-badge ${l.licenseType === 'Balochistan' ? 'bal' : 'all'}">${l.licenseType}</span></td>
+          <td style="color:var(--text-muted);font-size:.8rem">${fmtDate(l.issueDate)}</td>
+          <td><div class="td-actions">
+            <button class="btn btn-sm btn-edit" onclick='openEdit(${JSON.stringify(l)})'>Edit</button>
+            <button class="btn btn-sm btn-del"  onclick="doDelete('${l._id}','${l.name}')">Delete</button>
+          </div></td>
+        </tr>`).join('');
+    }
+
+    renderPagination(page, pages, total, search);
+  } catch {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Connection error</td></tr>';
+  }
+}
+
+function renderPagination(page, pages, total, search) {
+  const start = (page - 1) * 10 + 1;
+  const end   = Math.min(page * 10, total);
+  document.getElementById('pg-info').textContent = total ? `Showing ${start}–${end} of ${total}` : '';
+
+  const container = document.getElementById('pg-btns');
+  container.innerHTML = '';
+  if (pages <= 1) return;
+
+  const prev = document.createElement('button');
+  prev.className = 'pg-btn'; prev.textContent = '← Prev'; prev.disabled = page <= 1;
+  prev.onclick = () => loadLicenses(page - 1, search);
+  container.appendChild(prev);
+
+  for (let i = 1; i <= pages; i++) {
+    const b = document.createElement('button');
+    b.className = `pg-btn${i === page ? ' active' : ''}`;
+    b.textContent = i;
+    b.onclick = () => loadLicenses(i, search);
+    container.appendChild(b);
+  }
+
+  const next = document.createElement('button');
+  next.className = 'pg-btn'; next.textContent = 'Next →'; next.disabled = page >= pages;
+  next.onclick = () => loadLicenses(page + 1, search);
+  container.appendChild(next);
+}
+
+function onSearch(val) {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => loadLicenses(1, val.trim()), 400);
+}
+
+// ── Add License ────────────────────────────────────────────────────────────
+async function doAddLicense() {
+  const body = {
+    cnic:        document.getElementById('a-cnic').value.trim(),
+    name:        document.getElementById('a-name').value.trim(),
+    fatherName:  document.getElementById('a-father').value.trim(),
+    address:     document.getElementById('a-addr').value.trim(),
+    licenseNo:   document.getElementById('a-lno').value.trim(),
+    weaponNo:    document.getElementById('a-wno').value.trim(),
+    weaponType:  document.getElementById('a-wtype').value.trim(),
+    licenseType: document.getElementById('a-ltype').value,
+    issueDate:   document.getElementById('a-issue').value,
+    expiryDate:  document.getElementById('a-expiry').value
+  };
+
+  const okEl  = document.getElementById('add-ok');
+  const errEl = document.getElementById('add-err');
+  const btn   = document.getElementById('add-btn');
+  const lbl   = document.getElementById('add-label');
+  const spin  = document.getElementById('add-spin');
+
+  okEl.classList.remove('show'); errEl.classList.remove('show');
+  btn.disabled = true; lbl.style.display = 'none'; spin.style.display = 'block';
+
+  try {
+    const res  = await authFetch(`${API}/license`, { method: 'POST', body: JSON.stringify(body) });
+    const data = await res.json();
+
+    if (data.success) {
+      showAlert(okEl, `License for ${body.name} saved successfully.`, 'ok');
+      resetAddForm();
+      loadLicenses(1); loadStats();
+    } else {
+      const msg = data.errors ? data.errors.join('\n') : (data.message || 'Failed to save');
+      showAlert(errEl, msg, 'err');
+    }
+  } catch {
+    showAlert(errEl, 'Connection error. Is the server running?', 'err');
+  } finally {
+    btn.disabled = false; lbl.style.display = ''; spin.style.display = 'none';
+  }
+}
+
+function resetAddForm() {
+  ['a-cnic','a-name','a-father','a-addr','a-lno','a-wno','a-wtype','a-issue','a-expiry'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('a-ltype').value = '';
+}
+
+// ── Edit License ───────────────────────────────────────────────────────────
+function openEdit(l) {
+  document.getElementById('e-id').value     = l._id;
+  document.getElementById('e-cnic').value   = l.cnic;
+  document.getElementById('e-name').value   = l.name;
+  document.getElementById('e-father').value = l.fatherName;
+  document.getElementById('e-addr').value   = l.address;
+  document.getElementById('e-lno').value    = l.licenseNo;
+  document.getElementById('e-wno').value    = l.weaponNo;
+  document.getElementById('e-wtype').value  = l.weaponType;
+  document.getElementById('e-ltype').value  = l.licenseType;
+  document.getElementById('e-issue').value  = l.issueDate ? l.issueDate.slice(0,10) : '';
+  document.getElementById('e-expiry').value = l.expiryDate ? l.expiryDate.slice(0,10) : '';
+  document.getElementById('edit-ok').classList.remove('show');
+  document.getElementById('edit-err').classList.remove('show');
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeEditModal() { document.getElementById('edit-modal').classList.remove('open'); }
+function closeModal(e) { if (e.target.id === 'edit-modal') closeEditModal(); }
+
+async function doEditLicense() {
+  const id   = document.getElementById('e-id').value;
+  const body = {
+    cnic:        document.getElementById('e-cnic').value.trim(),
+    name:        document.getElementById('e-name').value.trim(),
+    fatherName:  document.getElementById('e-father').value.trim(),
+    address:     document.getElementById('e-addr').value.trim(),
+    licenseNo:   document.getElementById('e-lno').value.trim(),
+    weaponNo:    document.getElementById('e-wno').value.trim(),
+    weaponType:  document.getElementById('e-wtype').value.trim(),
+    licenseType: document.getElementById('e-ltype').value,
+    issueDate:   document.getElementById('e-issue').value,
+    expiryDate:  document.getElementById('e-expiry').value
+  };
+
+  const okEl  = document.getElementById('edit-ok');
+  const errEl = document.getElementById('edit-err');
+  const btn   = document.getElementById('edit-btn');
+  const lbl   = document.getElementById('edit-label');
+  const spin  = document.getElementById('edit-spin');
+
+  okEl.classList.remove('show'); errEl.classList.remove('show');
+  btn.disabled = true; lbl.style.display = 'none'; spin.style.display = 'block';
+
+  try {
+    const res  = await authFetch(`${API}/license/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+    const data = await res.json();
+
+    if (data.success) {
+      showAlert(okEl, 'License updated successfully.', 'ok');
+      loadLicenses(currentPage, document.getElementById('search-input').value);
+      loadStats();
+    } else {
+      showAlert(errEl, data.errors ? data.errors.join('\n') : (data.message || 'Update failed'), 'err');
+    }
+  } catch {
+    showAlert(errEl, 'Connection error.', 'err');
+  } finally {
+    btn.disabled = false; lbl.style.display = ''; spin.style.display = 'none';
+  }
+}
+
+// ── Delete License ─────────────────────────────────────────────────────────
+async function doDelete(id, name) {
+  if (!confirm(`Delete license for "${name}"?\n\nThis cannot be undone.`)) return;
+  try {
+    const res  = await authFetch(`${API}/license/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) { loadLicenses(currentPage, document.getElementById('search-input').value); loadStats(); }
+    else alert(data.message || 'Delete failed');
+  } catch { alert('Connection error.'); }
+}
+
+// ── Create User ────────────────────────────────────────────────────────────
+async function doCreateUser() {
+  const body = {
+    username: document.getElementById('u-user').value.trim(),
+    password: document.getElementById('u-pass').value,
+    role:     document.getElementById('u-role').value
+  };
+
+  const okEl  = document.getElementById('user-ok');
+  const errEl = document.getElementById('user-err');
+  const btn   = document.getElementById('user-btn');
+  const lbl   = document.getElementById('user-label');
+  const spin  = document.getElementById('user-spin');
+
+  okEl.classList.remove('show'); errEl.classList.remove('show');
+  btn.disabled = true; lbl.style.display = 'none'; spin.style.display = 'block';
+
+  try {
+    const res  = await authFetch(`${API}/auth/create-user`, { method: 'POST', body: JSON.stringify(body) });
+    const data = await res.json();
+
+    if (data.success) {
+      showAlert(okEl, `Account "${data.data.username}" (${data.data.role}) created successfully.`, 'ok');
+      document.getElementById('u-user').value = '';
+      document.getElementById('u-pass').value = '';
+    } else {
+      showAlert(errEl, data.errors ? data.errors.join('\n') : (data.message || 'Failed'), 'err');
+    }
+  } catch {
+    showAlert(errEl, 'Connection error.', 'err');
+  } finally {
+    btn.disabled = false; lbl.style.display = ''; spin.style.display = 'none';
+  }
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function authFetch(url, opts = {}) {
+  return fetch(url, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, ...(opts.headers || {}) }
+  });
+}
+
+function showAlert(el, msg, type) {
+  el.className = `alert alert-${type} show`;
+  el.textContent = msg;
+}
+
+function fmtCnic(c) {
+  if (!c || c.length !== 13) return c;
+  return `${c.slice(0,5)}-${c.slice(5,12)}-${c.slice(12)}`;
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+console.log('%c⚡ Valourim Phoenix', 'color:#c8a84b;font-family:monospace;font-size:16px;font-weight:bold;');
+</script>
+</body>
+</html>

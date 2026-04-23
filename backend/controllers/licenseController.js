@@ -98,6 +98,19 @@ exports.updateLicense = async (req, res, next) => {
   }
 };
 
+// DELETE /license/:id  — admin only
+exports.deleteLicense = async (req, res, next) => {
+  try {
+    const license = await License.findByIdAndDelete(req.params.id);
+    if (!license) {
+      return res.status(404).json({ success: false, message: 'License not found' });
+    }
+    res.json({ success: true, message: 'License deleted successfully' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // GET /licenses  — admin only, with pagination + search
 exports.getAllLicenses = async (req, res, next) => {
   try {
