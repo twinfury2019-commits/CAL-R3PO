@@ -381,29 +381,9 @@ document.querySelectorAll('.nav-link[data-page]').forEach(l => { if (l.dataset.p
 document.getElementById('cnic-input').addEventListener('input', function() { this.value = this.value.replace(/\D/g,'').slice(0,13); });
 document.getElementById('cnic-input').addEventListener('keydown', e => { if (e.key === 'Enter') doVerify(); });
 
-// Demo data — replace with real API after backend launch
-const DEMO = {
-  '5440112345678': {
-    name:     'Muhammad Yousaf Khan',
-    father:   'Haji Abdul Karim Khan',
-    cnic:     '54401-1234567-8',
-    addr:     'House #12, Satellite Town, Chaman',
-    weapon:   'PK-2024-07834 · Pistol 9mm (Beretta M9)',
-    lnodate:  'CHA/AL/2021/00341 · 15 March 2021',
-    lictype:  'All Pakistan'
-  },
-  '5440198765432': {
-    name:     'Abdul Qadir Baloch',
-    father:   'Haji Noor Muhammad Baloch',
-    cnic:     '54401-9876543-2',
-    addr:     'Ward 5, Near Customs Office, Chaman',
-    weapon:   'SG-2023-04512 · Shotgun 12-Bore (Double Barrel)',
-    lnodate:  'CHA/AL/2020/00187 · 04 July 2020',
-    lictype:  'Balochistan'
-  }
-};
+const API = 'http://localhost:5000';
 
-function doVerify() {
+async function doVerify() {
   const cnic = document.getElementById('cnic-input').value.trim();
   const btn  = document.getElementById('verify-btn');
   const spin = document.getElementById('spinner');
@@ -417,10 +397,14 @@ function doVerify() {
   btn.disabled = true; spin.style.display = 'block'; lbl.style.display = 'none';
   res.classList.remove('show'); err.style.display = 'none';
 
-  setTimeout(() => {
+  try {
+    const response = await fetch(`${API}/verify/${cnic}`);
+    const result   = await response.json();
+
     spin.style.display = 'none'; lbl.style.display = ''; btn.disabled = false;
-    const d = DEMO[cnic];
-    if (d) {
+
+    if (result.found) {
+      const d = result.data;
       document.getElementById('r-name').textContent    = d.name;
       document.getElementById('r-father').textContent  = d.father;
       document.getElementById('r-cnic').textContent    = d.cnic;
@@ -432,7 +416,10 @@ function doVerify() {
     } else {
       err.style.display = 'block';
     }
-  }, 1700);
+  } catch {
+    spin.style.display = 'none'; lbl.style.display = ''; btn.disabled = false;
+    err.style.display = 'block';
+  }
 }
 
 console.log('%c⚡ Valourim Phoenix', 'color:#c8a84b;font-family:monospace;font-size:16px;font-weight:bold;');
