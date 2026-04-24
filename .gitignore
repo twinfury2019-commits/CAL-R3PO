@@ -1,3 +1,4 @@
 backend/test.http
 render.env
 *.env.local
+.claude/
