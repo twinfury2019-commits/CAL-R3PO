@@ -1,4 +1,29 @@
-backend/test.http
+# Credentials & secrets
 render.env
 *.env.local
+*.env.production
+*.env.staging
+
+# Claude Code internal
 .claude/
+
+# Dev/test files
+backend/test.http
+*.http
+*.rest
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor metadata
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Logs
+*.log
+npm-debug.log*
+logs/

@@ -1,2 +1,17 @@
+# Dependencies
 node_modules/
+
+# All env files — only .env.example is safe to commit
 .env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# Dev/test files
+test.http
+*.http
+*.rest
