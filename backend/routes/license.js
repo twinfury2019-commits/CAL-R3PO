@@ -39,13 +39,16 @@ const licenseFields = [
     .isLength({ min: 5, max: 200 }).withMessage('Address must be 5–200 characters'),
 
   body('licenseNo')
-    .trim().notEmpty().withMessage('License number is required'),
+    .trim().notEmpty().withMessage('License number is required')
+    .isLength({ max: 50 }).withMessage('License number must be under 50 characters'),
 
   body('weaponNo')
-    .trim().notEmpty().withMessage('Weapon number is required'),
+    .trim().notEmpty().withMessage('Weapon number is required')
+    .isLength({ max: 50 }).withMessage('Weapon number must be under 50 characters'),
 
   body('weaponType')
-    .trim().notEmpty().withMessage('Weapon type is required'),
+    .trim().notEmpty().withMessage('Weapon type is required')
+    .isLength({ max: 100 }).withMessage('Weapon type must be under 100 characters'),
 
   body('issueDate')
     .isISO8601().withMessage('Issue date must be a valid date (YYYY-MM-DD)'),

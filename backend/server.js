@@ -1,9 +1,11 @@
-const express      = require('express');
-const cors         = require('cors');
-const helmet       = require('helmet');
-const dotenv       = require('dotenv');
-const connectDB    = require('./config/db');
-const errorHandler = require('./middleware/errorHandler');
+const express         = require('express');
+const cors            = require('cors');
+const helmet          = require('helmet');
+const mongoSanitize   = require('express-mongo-sanitize');
+const hpp             = require('hpp');
+const dotenv          = require('dotenv');
+const connectDB       = require('./config/db');
+const errorHandler    = require('./middleware/errorHandler');
 
 dotenv.config();
 connectDB();
@@ -21,24 +23,38 @@ app.use(cors({
   },
   credentials: true
 }));
-app.use(express.json());
+
+// Block payloads over 10kb — prevents large-body DoS attacks
+app.use(express.json({ limit: '10kb' }));
+
+// Strip $ and . from request data — blocks NoSQL injection attempts
+app.use(mongoSanitize());
+
+// Block HTTP parameter pollution (duplicate query params)
+app.use(hpp());
 
 app.use('/auth',  require('./routes/auth'));
 app.use('/',      require('./routes/license'));
 
 app.use(errorHandler);
 
+// Catch unhandled promise rejections — prevent silent crashes
+process.on('unhandledRejection', (err) => {
+  console.error(`[unhandledRejection] ${err.message}`);
+});
+
+// Catch uncaught exceptions — log and exit cleanly so PM2/Render can restart
+process.on('uncaughtException', (err) => {
+  console.error(`[uncaughtException] ${err.message}`);
+  process.exit(1);
+});
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log('─────────────────────────────────────────────');
   console.log(`  Arms License API  →  http://localhost:${PORT}`);
   console.log('─────────────────────────────────────────────');
-  console.log('  POST   /auth/login');
-  console.log('  POST   /auth/create-user  (admin)');
-  console.log('  GET    /verify/:cnic      (public)');
-  console.log('  POST   /license           (admin/operator)');
-  console.log('  PUT    /license/:id       (admin/operator)');
-  console.log('  GET    /licenses          (admin)');
-  console.log('  DELETE /license/:id       (admin)');
-  console.log('─────────────────────────────────────────────');
 });
+
+// Close idle connections after 30 seconds — blocks slow-loris attacks
+server.setTimeout(30000);

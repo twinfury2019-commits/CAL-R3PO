@@ -71,11 +71,6 @@ const seed = async () => {
 
   console.log('✓ Seed complete\n');
   console.log('─────────────────────────────────────────');
-  console.log('  Credentials');
-  console.log('─────────────────────────────────────────');
-  console.log('  Admin     →  admin     / Admin@1234');
-  console.log('  Operator  →  operator1 / Op@12345');
-  console.log('─────────────────────────────────────────');
   console.log('  Test CNICs');
   console.log('─────────────────────────────────────────');
   console.log('  5440112345678  →  Muhammad Yousaf Khan');
