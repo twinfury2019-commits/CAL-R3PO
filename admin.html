@@ -310,7 +310,8 @@
         <div class="form-grid">
           <div>
             <label class="field-label">CNIC <small style="color:var(--text-muted)">(13 digits, no dashes)</small></label>
-            <input class="field-input" id="a-cnic" type="text" maxlength="13" placeholder="5440112345678" inputmode="numeric">
+            <input class="field-input" id="a-cnic" type="text" maxlength="13" placeholder="5440112345678" inputmode="numeric" oninput="onCnicInput(this.value)">
+            <div id="cnic-count-badge" style="display:none;margin-top:.4rem;font-size:.75rem;padding:.3rem .6rem;border-radius:4px;"></div>
           </div>
           <div>
             <label class="field-label">Full Name</label>
@@ -692,6 +693,37 @@ async function doAddLicense() {
 function resetAddForm() {
   ['a-cnic','a-name','a-father','a-addr','a-lno','a-wno','a-wtype','a-issue','a-expiry'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('a-ltype').value = '';
+  const badge = document.getElementById('cnic-count-badge');
+  badge.style.display = 'none'; badge.textContent = '';
+  document.getElementById('add-btn').disabled = false;
+}
+
+let cnicCheckTimer = null;
+function onCnicInput(val) {
+  const badge = document.getElementById('cnic-count-badge');
+  clearTimeout(cnicCheckTimer);
+  if (val.length !== 13) { badge.style.display = 'none'; document.getElementById('add-btn').disabled = false; return; }
+  cnicCheckTimer = setTimeout(async () => {
+    try {
+      const r = await fetch(`${API}/cnic-count/${val}`, { headers: { Authorization: `Bearer ${token}` } });
+      const d = await r.json();
+      if (!d.success) return;
+      badge.style.display = 'block';
+      if (d.count === 0) {
+        badge.style.background = 'rgba(0,92,46,.18)'; badge.style.color = '#5dbf82';
+        badge.textContent = 'No existing license for this CNIC — new record will be created.';
+        document.getElementById('add-btn').disabled = false;
+      } else if (d.count < 10) {
+        badge.style.background = 'rgba(200,168,75,.12)'; badge.style.color = '#c8a84b';
+        badge.textContent = `${d.count} license${d.count > 1 ? 's' : ''} already registered for this CNIC (${d.count}/10). Adding another.`;
+        document.getElementById('add-btn').disabled = false;
+      } else {
+        badge.style.background = 'rgba(220,50,50,.12)'; badge.style.color = '#e07070';
+        badge.textContent = 'Maximum of 10 licenses already registered for this CNIC. Cannot add more.';
+        document.getElementById('add-btn').disabled = true;
+      }
+    } catch { badge.style.display = 'none'; }
+  }, 500);
 }
 
 // ── Edit License ───────────────────────────────────────────────────────────

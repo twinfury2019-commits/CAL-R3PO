@@ -9,10 +9,10 @@ const formatDate = (date) =>
 // GET /verify/:cnic  — public
 exports.verifyByCnic = async (req, res, next) => {
   try {
-    const cnic = req.params.cnic.replace(/-/g, '');
-    const license = await License.findOne({ cnic });
+    const cnic     = req.params.cnic.replace(/-/g, '');
+    const licenses = await License.find({ cnic }).sort({ createdAt: 1 });
 
-    if (!license) {
+    if (!licenses.length) {
       return res.status(404).json({
         success: false,
         found:   false,
@@ -20,17 +20,21 @@ exports.verifyByCnic = async (req, res, next) => {
       });
     }
 
+    const first = licenses[0];
     res.json({
       success: true,
       found:   true,
+      count:   licenses.length,
       data: {
-        name:    license.name,
-        father:  license.fatherName,
-        cnic:    formatCnic(license.cnic),
-        addr:    license.address,
-        weapon:  `${license.weaponNo} · ${license.weaponType}`,
-        lnodate: `${license.licenseNo} · ${formatDate(license.issueDate)}`,
-        lictype: license.licenseType
+        name:   first.name,
+        father: first.fatherName,
+        cnic:   formatCnic(first.cnic),
+        addr:   first.address,
+        licenses: licenses.map(l => ({
+          weapon:  `${l.weaponNo} · ${l.weaponType}`,
+          lnodate: `${l.licenseNo} · ${formatDate(l.issueDate)}`,
+          lictype: l.licenseType
+        }))
       }
     });
   } catch (err) {
@@ -41,15 +45,14 @@ exports.verifyByCnic = async (req, res, next) => {
 // POST /license  — admin, operator
 exports.createLicense = async (req, res, next) => {
   try {
-    const cnic = req.body.cnic.replace(/-/g, '');
+    const cnic  = req.body.cnic.replace(/-/g, '');
+    const count = await License.countDocuments({ cnic });
 
-    // Explicit duplicate check before insert
-    const existing = await License.findOne({ cnic });
-    if (existing) {
+    if (count >= 10) {
       return res.status(409).json({
         success: false,
-        message: 'A license for this CNIC already exists',
-        errors:  [`cnic: ${formatCnic(cnic)} is already registered`]
+        message: 'Maximum of 10 licenses per CNIC already registered',
+        errors:  [`cnic: ${formatCnic(cnic)} already has 10 licenses`]
       });
     }
 
@@ -65,20 +68,23 @@ exports.createLicense = async (req, res, next) => {
   }
 };
 
-// PUT /license/:id  — admin, operator
+// PUT /license/:id  — admin only
 exports.updateLicense = async (req, res, next) => {
   try {
     if (req.body.cnic) {
       req.body.cnic = req.body.cnic.replace(/-/g, '');
 
-      // If CNIC is being changed, check it doesn't clash with another record
-      const clash = await License.findOne({ cnic: req.body.cnic, _id: { $ne: req.params.id } });
-      if (clash) {
-        return res.status(409).json({
-          success: false,
-          message: 'That CNIC is already assigned to a different license',
-          errors:  [`cnic: ${formatCnic(req.body.cnic)} belongs to another record`]
-        });
+      // If CNIC is changing, ensure target CNIC won't exceed 10 licenses
+      const current = await License.findById(req.params.id).select('cnic');
+      if (current && current.cnic !== req.body.cnic) {
+        const count = await License.countDocuments({ cnic: req.body.cnic });
+        if (count >= 10) {
+          return res.status(409).json({
+            success: false,
+            message: 'Target CNIC already has the maximum of 10 licenses',
+            errors:  [`cnic: ${formatCnic(req.body.cnic)} already has 10 licenses`]
+          });
+        }
       }
     }
 

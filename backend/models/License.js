@@ -4,7 +4,6 @@ const licenseSchema = new mongoose.Schema({
   cnic: {
     type:     String,
     required: [true, 'CNIC is required'],
-    unique:   true,
     trim:     true,
     match:    [/^\d{13}$/, 'CNIC must be exactly 13 digits with no dashes']
   },

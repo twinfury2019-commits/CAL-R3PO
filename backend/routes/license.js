@@ -70,7 +70,17 @@ const licenseFields = [
 // ── Routes ────────────────────────────────────────────────────────────────
 
 // Public — rate limited + CNIC format validated
-router.get('/verify/:cnic', verifyLimiter, validate(cnicParam), verifyByCnic);
+router.get('/verify/:cnic',       verifyLimiter, validate(cnicParam), verifyByCnic);
+
+// Admin & Operator — check how many licenses a CNIC already has
+router.get('/cnic-count/:cnic', protect, requireRole('admin', 'operator'), validate(cnicParam), async (req, res, next) => {
+  try {
+    const License = require('../models/License');
+    const cnic  = req.params.cnic.replace(/-/g, '');
+    const count = await License.countDocuments({ cnic });
+    res.json({ success: true, cnic, count, remaining: 10 - count });
+  } catch (err) { next(err); }
+});
 
 // Admin & Operator
 router.post('/license',    protect, requireRole('admin', 'operator'), validate(licenseFields), createLicense);

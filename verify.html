@@ -303,13 +303,11 @@
             Verified
           </div>
         </div>
-        <div class="r-row"><span class="r-key">Name</span>                 <span class="r-val" id="r-name">—</span></div>
-        <div class="r-row"><span class="r-key">Father Name</span>          <span class="r-val" id="r-father">—</span></div>
-        <div class="r-row"><span class="r-key">CNIC</span>                 <span class="r-val mono" id="r-cnic">—</span></div>
-        <div class="r-row"><span class="r-key">Address</span>              <span class="r-val" id="r-addr">—</span></div>
-        <div class="r-row"><span class="r-key">Weapon No &amp; Type</span> <span class="r-val" id="r-weapon">—</span></div>
-        <div class="r-row"><span class="r-key">License No &amp; Date</span><span class="r-val mono" id="r-lnodate">—</span></div>
-        <div class="r-row"><span class="r-key">License Type</span>         <span class="r-val" id="r-lictype">—</span></div>
+        <div class="r-row"><span class="r-key">Name</span>        <span class="r-val" id="r-name">—</span></div>
+        <div class="r-row"><span class="r-key">Father Name</span> <span class="r-val" id="r-father">—</span></div>
+        <div class="r-row"><span class="r-key">CNIC</span>        <span class="r-val mono" id="r-cnic">—</span></div>
+        <div class="r-row"><span class="r-key">Address</span>     <span class="r-val" id="r-addr">—</span></div>
+        <div id="r-licenses-container"></div>
       </div>
 
       <p class="verify-notice">
@@ -408,13 +406,27 @@ async function doVerify() {
 
     if (result.found) {
       const d = result.data;
-      document.getElementById('r-name').textContent    = d.name;
-      document.getElementById('r-father').textContent  = d.father;
-      document.getElementById('r-cnic').textContent    = d.cnic;
-      document.getElementById('r-addr').textContent    = d.addr;
-      document.getElementById('r-weapon').textContent  = d.weapon;
-      document.getElementById('r-lnodate').textContent = d.lnodate;
-      document.getElementById('r-lictype').textContent = d.lictype;
+      document.getElementById('r-name').textContent   = d.name;
+      document.getElementById('r-father').textContent = d.father;
+      document.getElementById('r-cnic').textContent   = d.cnic;
+      document.getElementById('r-addr').textContent   = d.addr;
+
+      const container = document.getElementById('r-licenses-container');
+      container.innerHTML = '';
+      const multi = d.licenses.length > 1;
+      d.licenses.forEach((l, i) => {
+        if (multi) {
+          const hdr = document.createElement('div');
+          hdr.style.cssText = 'margin:1rem 0 .4rem;padding:.35rem .75rem;background:rgba(200,168,75,.1);border-left:2px solid var(--gold);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);';
+          hdr.textContent = `License ${i + 1} of ${d.licenses.length}`;
+          container.appendChild(hdr);
+        }
+        container.innerHTML += `
+          <div class="r-row"><span class="r-key">Weapon No &amp; Type</span><span class="r-val">${l.weapon}</span></div>
+          <div class="r-row"><span class="r-key">License No &amp; Date</span><span class="r-val mono">${l.lnodate}</span></div>
+          <div class="r-row"><span class="r-key">License Type</span><span class="r-val">${l.lictype}</span></div>`;
+      });
+
       setTimeout(() => res.classList.add('show'), 40);
     } else {
       err.style.display = 'block';
