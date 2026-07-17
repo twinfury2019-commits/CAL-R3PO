@@ -475,6 +475,13 @@
 </div>
 
 <script>
+// ── Security helper — escape untrusted data before it touches innerHTML ────
+function escapeHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
 // ── Config ─────────────────────────────────────────────────────────────────
 const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:5000'
@@ -484,6 +491,7 @@ const API = (window.location.hostname === 'localhost' || window.location.hostnam
 let token       = localStorage.getItem('cal_token');
 let currentPage = 1;
 let searchTimer = null;
+let currentLicenses = [];
 
 // ── Boot ───────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
@@ -593,19 +601,20 @@ async function loadLicenses(page = 1, search = '') {
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         <p>No records found</p></td></tr>`;
     } else {
-      tbody.innerHTML = licenses.map(l => `
+      tbody.innerHTML = licenses.map((l, i) => `
         <tr>
-          <td class="td-cnic">${fmtCnic(l.cnic)}</td>
-          <td>${l.name}</td>
-          <td style="font-family:monospace;font-size:.8rem">${l.licenseNo}</td>
-          <td>${l.weaponType}</td>
-          <td><span class="td-badge ${l.licenseType === 'Balochistan' ? 'bal' : 'all'}">${l.licenseType}</span></td>
-          <td style="color:var(--text-muted);font-size:.8rem">${fmtDate(l.issueDate)}</td>
+          <td class="td-cnic">${escapeHtml(fmtCnic(l.cnic))}</td>
+          <td>${escapeHtml(l.name)}</td>
+          <td style="font-family:monospace;font-size:.8rem">${escapeHtml(l.licenseNo)}</td>
+          <td>${escapeHtml(l.weaponType)}</td>
+          <td><span class="td-badge ${l.licenseType === 'Balochistan' ? 'bal' : 'all'}">${escapeHtml(l.licenseType)}</span></td>
+          <td style="color:var(--text-muted);font-size:.8rem">${escapeHtml(fmtDate(l.issueDate))}</td>
           <td><div class="td-actions">
-            ${isAdmin ? `<button class="btn btn-sm btn-edit" onclick='openEdit(${JSON.stringify(l)})'>Edit</button>` : ''}
-            <button class="btn btn-sm btn-del" onclick="doDelete('${l._id}','${l.name}')">Delete</button>
+            ${isAdmin ? `<button class="btn btn-sm btn-edit" data-idx="${i}" onclick="openEdit(currentLicenses[this.dataset.idx])">Edit</button>` : ''}
+            <button class="btn btn-sm btn-del" data-idx="${i}" onclick="doDelete(currentLicenses[this.dataset.idx]._id, currentLicenses[this.dataset.idx].name)">Delete</button>
           </div></td>
         </tr>`).join('');
+      currentLicenses = licenses;
     }
 
     renderPagination(page, pages, total, search);

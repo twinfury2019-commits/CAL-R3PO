@@ -360,6 +360,13 @@
 </footer>
 
 <script>
+// ── Security helper — escape untrusted data before it touches innerHTML ────
+function escapeHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
 // Reveal
 const revealObs = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
@@ -422,9 +429,9 @@ async function doVerify() {
           container.appendChild(hdr);
         }
         container.innerHTML += `
-          <div class="r-row"><span class="r-key">Weapon No &amp; Type</span><span class="r-val">${l.weapon}</span></div>
-          <div class="r-row"><span class="r-key">License No &amp; Date</span><span class="r-val mono">${l.lnodate}</span></div>
-          <div class="r-row"><span class="r-key">License Type</span><span class="r-val">${l.lictype}</span></div>`;
+          <div class="r-row"><span class="r-key">Weapon No &amp; Type</span><span class="r-val">${escapeHtml(l.weapon)}</span></div>
+          <div class="r-row"><span class="r-key">License No &amp; Date</span><span class="r-val mono">${escapeHtml(l.lnodate)}</span></div>
+          <div class="r-row"><span class="r-key">License Type</span><span class="r-val">${escapeHtml(l.lictype)}</span></div>`;
       });
 
       setTimeout(() => res.classList.add('show'), 40);
